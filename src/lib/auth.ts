@@ -8,7 +8,10 @@ import { LoginSchema } from "@/lib/validators";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  // trustHost allows Vercel / custom domains to work correctly with NextAuth v5
+  trustHost: true,
   session: { strategy: "jwt" },
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/auth/login",
     error: "/auth/login",
@@ -17,6 +20,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      // Allow linking Google account to an existing credentials account
+      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
       name: "credentials",

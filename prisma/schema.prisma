@@ -152,6 +152,16 @@ model LedgerTransaction {
   friend Friend @relation(fields: [friendId], references: [id], onDelete: Cascade)
 }
 
+model EmailOtp {
+  id        String   @id @default(cuid())
+  email     String
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
 model ReminderLog {
   id       String   @id @default(cuid())
   userId   String

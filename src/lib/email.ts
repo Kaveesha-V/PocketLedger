@@ -116,6 +116,46 @@ export async function sendReminderEmail(opts: {
 }
 
 // ─────────────────────────────────────────────
+//  OTP verification email
+// ─────────────────────────────────────────────
+
+export async function sendOtpEmail(to: string, otp: string): Promise<{ success: boolean; error?: string }> {
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY not configured. Skipping OTP email.");
+    return { success: false, error: "Email service not configured" };
+  }
+
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to,
+      subject: "Your PocketLedger verification code",
+      html: `
+      <div style="max-width:480px;margin:32px auto;font-family:Inter,sans-serif;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(15,35,29,0.10);">
+        <div style="background:linear-gradient(135deg,#0f9d78,#0a6e54);padding:32px;text-align:center;">
+          <h1 style="font-family:Poppins,sans-serif;color:#fff;margin:0;font-size:22px;">💰 PocketLedger</h1>
+          <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:14px;">Email Verification</p>
+        </div>
+        <div style="padding:32px;text-align:center;">
+          <p style="color:#10231d;font-size:15px;margin:0 0 24px;">Use the code below to verify your email address. It expires in <strong>10 minutes</strong>.</p>
+          <div style="background:#f0faf6;border:2px dashed #0f9d78;border-radius:12px;padding:24px;display:inline-block;margin-bottom:24px;">
+            <span style="font-family:Poppins,monospace;font-size:2.5rem;font-weight:700;letter-spacing:0.35em;color:#0f9d78;">${otp}</span>
+          </div>
+          <p style="color:#6b7f77;font-size:13px;margin:0;">If you didn't request this, you can safely ignore this email.</p>
+        </div>
+        <div style="padding:16px 32px;background:#f6faf8;text-align:center;border-top:1px solid #eaf3ef;">
+          <p style="margin:0;font-size:12px;color:#6b7f77;">Sent via PocketLedger · Manage your money smarter</p>
+        </div>
+      </div>`,
+    });
+    return { success: true };
+  } catch (e) {
+    console.error("[email] OTP send failed:", e);
+    return { success: false, error: String(e) };
+  }
+}
+
+// ─────────────────────────────────────────────
 //  Welcome email
 // ─────────────────────────────────────────────
 

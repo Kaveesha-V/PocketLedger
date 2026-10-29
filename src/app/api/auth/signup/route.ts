@@ -8,10 +8,19 @@ import { sendWelcomeEmail } from "@/lib/email";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const parsed = SignupSchema.safeParse(body);
+
+    // Require OTP verification token in the request
+    const { otpVerified, ...signupData } = body;
+
+    if (!otpVerified) {
+      return NextResponse.json(err("Email verification is required before creating an account"), { status: 400 });
+    }
+
+    const parsed = SignupSchema.safeParse(signupData);
 
     if (!parsed.success) {
-      return NextResponse.json(err(parsed.error.errors[0].message), { status: 400 });
+      const issues = parsed.error?.issues ?? parsed.error?.errors ?? [];
+      return NextResponse.json(err(issues[0]?.message ?? "Validation error"), { status: 400 });
     }
 
     const { name, email, password, phone, currency } = parsed.data;
@@ -24,11 +33,12 @@ export async function POST(req: Request) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Create user
+    // Create user with emailVerified set since OTP confirmed
     const user = await prisma.user.create({
       data: {
         name,
         email,
+        emailVerified: new Date(),
         passwordHash,
         phone: phone || null,
         currency: currency || "LKR",

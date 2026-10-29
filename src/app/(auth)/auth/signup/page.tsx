@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import type { Metadata } from "next";
 
 const CURRENCIES = [
   { code: "LKR", label: "LKR — Sri Lankan Rupee" },
@@ -61,63 +60,84 @@ function PasswordStrength({ password }: { password: string }) {
   );
 }
 
-export default function SignupPage() {
-  const router = useRouter();
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-    currency: "LKR",
-  });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+// ─── OTP Input ────────────────────────────────
+function OtpInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const refs = Array.from({ length: 6 }, () => useRef<HTMLInputElement>(null));
+  const digits = value.split("").concat(Array(6).fill("")).slice(0, 6);
 
-  function set(key: string, value: string) {
-    setForm((f) => ({ ...f, [key]: value }));
+  function handleKey(i: number, e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Backspace" && !digits[i] && i > 0) {
+      refs[i - 1].current?.focus();
+    }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleChange(i: number, v: string) {
+    const char = v.replace(/\D/g, "").slice(-1);
+    const next = digits.map((d, idx) => (idx === i ? char : d)).join("");
+    onChange(next);
+    if (char && i < 5) {
+      refs[i + 1].current?.focus();
+    }
+  }
+
+  function handlePaste(e: React.ClipboardEvent) {
     e.preventDefault();
-    setError("");
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    onChange(pasted.padEnd(6, "").slice(0, 6).split("").join(""));
+    onChange(pasted);
+    refs[Math.min(pasted.length, 5)].current?.focus();
+  }
 
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
+  return (
+    <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", margin: "1.5rem 0" }}>
+      {digits.map((d, i) => (
+        <input
+          key={i}
+          ref={refs[i]}
+          type="text"
+          inputMode="numeric"
+          maxLength={1}
+          value={d}
+          onPaste={handlePaste}
+          onChange={(e) => handleChange(i, e.target.value)}
+          onKeyDown={(e) => handleKey(i, e)}
+          style={{
+            width: "3rem",
+            height: "3.5rem",
+            textAlign: "center",
+            fontSize: "1.5rem",
+            fontWeight: 700,
+            fontFamily: "Poppins, monospace",
+            border: `2px solid ${d ? "var(--primary)" : "var(--border)"}`,
+            borderRadius: "var(--radius-sm)",
+            background: "var(--surface-2)",
+            color: "var(--fg)",
+            outline: "none",
+            transition: "border-color 150ms",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
-    setLoading(true);
-    try {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const json = await res.json();
-
-      if (json.error) {
-        setError(json.error);
-        return;
-      }
-
-      // Auto-sign-in after signup
-      const signInResult = await signIn("credentials", {
-        email: form.email,
-        password: form.password,
-        redirect: false,
-      });
-
-      if (signInResult?.ok) {
-        router.push("/dashboard");
-      } else {
-        router.push("/auth/login");
-      }
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+// ─── Step 1: Registration Form ────────────────
+function StepForm({
+  form,
+  onChange,
+  onNext,
+  error,
+  loading,
+}: {
+  form: Record<string, string>;
+  onChange: (k: string, v: string) => void;
+  onNext: () => void;
+  error: string;
+  loading: boolean;
+}) {
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    onNext();
   }
 
   return (
@@ -149,14 +169,7 @@ export default function SignupPage() {
         Continue with Google
       </button>
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.75rem",
-          marginBottom: "1.25rem",
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
         <div style={{ flex: 1, height: "1px", background: "var(--border)" }} />
         <span style={{ color: "var(--muted)", fontSize: "0.8rem" }}>or</span>
         <div style={{ flex: 1, height: "1px", background: "var(--border)" }} />
@@ -164,7 +177,6 @@ export default function SignupPage() {
 
       {error && (
         <div
-          className="badge-expense"
           style={{
             padding: "0.75rem 1rem",
             borderRadius: "var(--radius-sm)",
@@ -182,26 +194,16 @@ export default function SignupPage() {
         <div className="field">
           <label className="label" htmlFor="name">Full name</label>
           <input
-            id="name"
-            className="input"
-            type="text"
-            placeholder="Kasun Perera"
-            required
-            value={form.name}
-            onChange={(e) => set("name", e.target.value)}
+            id="name" className="input" type="text" placeholder="Kasun Perera"
+            required value={form.name} onChange={(e) => onChange("name", e.target.value)}
           />
         </div>
 
         <div className="field">
           <label className="label" htmlFor="email">Email address</label>
           <input
-            id="email"
-            className="input"
-            type="email"
-            placeholder="kasun@example.com"
-            required
-            value={form.email}
-            onChange={(e) => set("email", e.target.value)}
+            id="email" className="input" type="email" placeholder="kasun@example.com"
+            required value={form.email} onChange={(e) => onChange("email", e.target.value)}
           />
         </div>
 
@@ -211,27 +213,19 @@ export default function SignupPage() {
             <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
           </label>
           <input
-            id="phone"
-            className="input"
-            type="tel"
-            placeholder="+94771234567"
-            value={form.phone}
-            onChange={(e) => set("phone", e.target.value)}
+            id="phone" className="input" type="tel" placeholder="+94771234567"
+            value={form.phone} onChange={(e) => onChange("phone", e.target.value)}
           />
         </div>
 
         <div className="field">
           <label className="label" htmlFor="currency">Preferred currency</label>
           <select
-            id="currency"
-            className="input"
-            value={form.currency}
-            onChange={(e) => set("currency", e.target.value)}
+            id="currency" className="input" value={form.currency}
+            onChange={(e) => onChange("currency", e.target.value)}
           >
             {CURRENCIES.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.label}
-              </option>
+              <option key={c.code} value={c.code}>{c.label}</option>
             ))}
           </select>
         </div>
@@ -239,13 +233,8 @@ export default function SignupPage() {
         <div className="field">
           <label className="label" htmlFor="password">Password</label>
           <input
-            id="password"
-            className="input"
-            type="password"
-            placeholder="Min. 8 characters"
-            required
-            value={form.password}
-            onChange={(e) => set("password", e.target.value)}
+            id="password" className="input" type="password" placeholder="Min. 8 characters"
+            required value={form.password} onChange={(e) => onChange("password", e.target.value)}
           />
           <PasswordStrength password={form.password} />
         </div>
@@ -253,37 +242,311 @@ export default function SignupPage() {
         <div className="field">
           <label className="label" htmlFor="confirmPassword">Confirm password</label>
           <input
-            id="confirmPassword"
-            className="input"
-            type="password"
-            placeholder="Repeat your password"
-            required
-            value={form.confirmPassword}
-            onChange={(e) => set("confirmPassword", e.target.value)}
+            id="confirmPassword" className="input" type="password" placeholder="Repeat your password"
+            required value={form.confirmPassword}
+            onChange={(e) => onChange("confirmPassword", e.target.value)}
           />
         </div>
 
         <button
-          id="btn-signup-submit"
-          type="submit"
+          id="btn-signup-submit" type="submit"
           className="btn btn-primary"
           style={{ width: "100%", marginTop: "0.5rem" }}
           disabled={loading}
         >
-          {loading ? "Creating account…" : "Create account →"}
+          {loading ? "Sending verification…" : "Continue →"}
         </button>
       </form>
 
-      <p
-        style={{
-          fontSize: "0.75rem",
-          color: "var(--muted)",
-          textAlign: "center",
-          marginTop: "1.25rem",
-        }}
-      >
+      <p style={{ fontSize: "0.75rem", color: "var(--muted)", textAlign: "center", marginTop: "1.25rem" }}>
         By signing up you agree to our terms. Reminders are only sent when you press send.
       </p>
     </>
+  );
+}
+
+// ─── Step 2: OTP Verification ────────────────
+function StepOtp({
+  email,
+  onVerified,
+  onBack,
+  devOtp,
+}: {
+  email: string;
+  onVerified: () => void;
+  onBack: () => void;
+  devOtp?: string;
+}) {
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(60);
+
+  // Countdown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
+
+  async function handleVerify(e: React.FormEvent) {
+    e.preventDefault();
+    if (otp.length < 6) {
+      setError("Please enter the full 6-digit code.");
+      return;
+    }
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
+      const json = await res.json();
+      if (json.error) {
+        setError(json.error);
+      } else {
+        onVerified();
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleResend() {
+    setError("");
+    setResendCooldown(60);
+    try {
+      await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+    } catch {
+      setError("Could not resend code. Please try again.");
+    }
+  }
+
+  return (
+    <>
+      <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+        <div style={{ fontSize: "3rem", marginBottom: "0.75rem" }}>📧</div>
+        <h1 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Check your email</h1>
+        <p style={{ color: "var(--muted)", fontSize: "0.9rem" }}>
+          We sent a 6-digit verification code to
+          <br />
+          <strong style={{ color: "var(--fg)" }}>{email}</strong>
+        </p>
+      </div>
+
+      {/* Dev mode hint */}
+      {devOtp && (
+        <div style={{
+          padding: "0.625rem 1rem",
+          borderRadius: "var(--radius-sm)",
+          marginBottom: "1rem",
+          fontSize: "0.8rem",
+          background: "color-mix(in srgb, var(--primary) 10%, transparent)",
+          color: "var(--primary)",
+          textAlign: "center",
+        }}>
+          🛠 Dev mode — OTP: <strong style={{ letterSpacing: "0.2em" }}>{devOtp}</strong>
+        </div>
+      )}
+
+      {error && (
+        <div style={{
+          padding: "0.75rem 1rem",
+          borderRadius: "var(--radius-sm)",
+          marginBottom: "1rem",
+          fontSize: "0.875rem",
+          background: "color-mix(in srgb, var(--expense) 12%, transparent)",
+          color: "var(--expense)",
+        }}>
+          ⚠️ {error}
+        </div>
+      )}
+
+      <form onSubmit={handleVerify}>
+        <OtpInput value={otp} onChange={setOtp} />
+
+        <button
+          type="submit"
+          className="btn btn-primary"
+          style={{ width: "100%" }}
+          disabled={loading || otp.length < 6}
+        >
+          {loading ? "Verifying…" : "Verify email →"}
+        </button>
+      </form>
+
+      <div style={{ textAlign: "center", marginTop: "1.25rem" }}>
+        {resendCooldown > 0 ? (
+          <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
+            Resend code in {resendCooldown}s
+          </p>
+        ) : (
+          <button
+            type="button"
+            onClick={handleResend}
+            style={{
+              background: "none", border: "none", cursor: "pointer",
+              color: "var(--primary)", fontSize: "0.875rem", textDecoration: "underline",
+            }}
+          >
+            Resend code
+          </button>
+        )}
+      </div>
+
+      <div style={{ textAlign: "center", marginTop: "0.75rem" }}>
+        <button
+          type="button"
+          onClick={onBack}
+          style={{
+            background: "none", border: "none", cursor: "pointer",
+            color: "var(--muted)", fontSize: "0.8rem",
+          }}
+        >
+          ← Change email
+        </button>
+      </div>
+    </>
+  );
+}
+
+// ─── Main Page ────────────────────────────────
+export default function SignupPage() {
+  const router = useRouter();
+  const [step, setStep] = useState<"form" | "otp" | "creating">("form");
+  const [form, setForm] = useState({
+    name: "", email: "", phone: "", password: "", confirmPassword: "", currency: "LKR",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [devOtp, setDevOtp] = useState<string | undefined>(undefined);
+
+  function set(key: string, value: string) {
+    setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  // Step 1 → send OTP and move to step 2
+  async function handleFormSubmit() {
+    setError("");
+
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (form.password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+    if (!/[A-Z]/.test(form.password)) {
+      setError("Password must contain at least one uppercase letter.");
+      return;
+    }
+    if (!/[0-9]/.test(form.password)) {
+      setError("Password must contain at least one number.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email }),
+      });
+      const json = await res.json();
+
+      if (json.error) {
+        setError(json.error);
+        return;
+      }
+
+      // In dev mode the API returns the OTP so we can show it
+      if (json.data?.devOtp) {
+        setDevOtp(json.data.devOtp);
+      }
+
+      setStep("otp");
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Step 2 → OTP verified, create account
+  async function handleOtpVerified() {
+    setStep("creating");
+    setError("");
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, otpVerified: true }),
+      });
+      const json = await res.json();
+
+      if (json.error) {
+        setError(json.error);
+        setStep("form");
+        return;
+      }
+
+      // Auto-sign-in after signup
+      const signInResult = await signIn("credentials", {
+        email: form.email,
+        password: form.password,
+        redirect: false,
+      });
+
+      if (signInResult?.ok) {
+        router.push("/dashboard");
+      } else {
+        router.push("/auth/login");
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setStep("form");
+    }
+  }
+
+  if (step === "creating") {
+    return (
+      <div style={{ textAlign: "center", padding: "3rem 0" }}>
+        <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>⏳</div>
+        <h2 style={{ fontSize: "1.25rem" }}>Creating your account…</h2>
+        <p style={{ color: "var(--muted)", marginTop: "0.5rem" }}>
+          Just a moment, we're setting everything up.
+        </p>
+      </div>
+    );
+  }
+
+  if (step === "otp") {
+    return (
+      <StepOtp
+        email={form.email}
+        devOtp={devOtp}
+        onVerified={handleOtpVerified}
+        onBack={() => { setStep("form"); setError(""); }}
+      />
+    );
+  }
+
+  return (
+    <StepForm
+      form={form}
+      onChange={set}
+      onNext={handleFormSubmit}
+      error={error}
+      loading={loading}
+    />
   );
 }
