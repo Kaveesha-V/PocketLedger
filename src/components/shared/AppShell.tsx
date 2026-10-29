@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { initials, stringToHue } from "@/lib/format";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface NavItem {
   href: string;
@@ -53,24 +54,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Logo */}
         <div
           style={{
-            padding: "1.5rem 1.25rem 1rem",
+            padding: "1.25rem 1.25rem 1rem",
             display: "flex",
             alignItems: "center",
-            gap: "0.5rem",
+            justifyContent: "space-between",
             borderBottom: "1px solid var(--border)",
           }}
         >
-          <span style={{ fontSize: "1.375rem" }}>💰</span>
-          <span
-            style={{
-              fontFamily: "Poppins, sans-serif",
-              fontWeight: 700,
-              fontSize: "1.125rem",
-              color: "var(--primary)",
-            }}
-          >
-            PocketLedger
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span style={{ fontSize: "1.375rem" }}>💰</span>
+            <span
+              style={{
+                fontFamily: "Poppins, sans-serif",
+                fontWeight: 700,
+                fontSize: "1.125rem",
+                color: "var(--primary)",
+              }}
+            >
+              PocketLedger
+            </span>
+          </div>
+          <ThemeToggle />
         </div>
 
         {/* Nav links */}
@@ -181,6 +185,39 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* ── Main content ─────────────────────────────────────────────── */}
       <main style={{ flex: 1, minWidth: 0, paddingBottom: "5rem" }}>
+        {/* Mobile Top Header */}
+        <header
+          className="mobile-top-header"
+          style={{
+            display: "none",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0.875rem 1.25rem",
+            background: "var(--surface)",
+            borderBottom: "1px solid var(--border)",
+            position: "sticky",
+            top: 0,
+            zIndex: 30,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span style={{ fontSize: "1.25rem" }}>💰</span>
+            <span
+              style={{
+                fontFamily: "Poppins, sans-serif",
+                fontWeight: 700,
+                fontSize: "1.0625rem",
+                color: "var(--primary)",
+              }}
+            >
+              PocketLedger
+            </span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <ThemeToggle />
+          </div>
+        </header>
+
         {children}
       </main>
 
@@ -229,10 +266,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <style>{`
         @media (min-width: 1024px) {
           .mobile-bottom-nav { display: none !important; }
+          .mobile-top-header { display: none !important; }
           .desktop-sidebar { display: flex !important; }
         }
         @media (max-width: 1023px) {
           .desktop-sidebar { display: none !important; }
+          .mobile-top-header { display: flex !important; }
         }
       `}</style>
     </div>

@@ -54,6 +54,8 @@ export default function SettingsPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const [exportNotice, setExportNotice] = useState("");
 
   useEffect(() => {
     fetchProfile();
@@ -65,14 +67,20 @@ export default function SettingsPage() {
       const res = await fetch("/api/user/settings");
       const json = await res.json();
       if (json.data) {
+        const currentTheme = json.data.theme || localStorage.getItem("pl_theme") || "light";
         setProfile({
           name: json.data.name || "",
           email: json.data.email || "",
           phone: json.data.phone || "",
           currency: json.data.currency || "LKR",
-          theme: json.data.theme || "light",
+          theme: currentTheme,
           reminderTemplates: json.data.reminderTemplates || DEFAULT_TEMPLATES,
         });
+        if (currentTheme === "dark") {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
       }
     } catch {
       // Fallback from session if route not ready
@@ -208,17 +216,20 @@ export default function SettingsPage() {
       document.body.appendChild(a);
       a.click();
       a.remove();
+      setExportNotice("Export downloaded successfully ✓");
+      setTimeout(() => setExportNotice(""), 3000);
     } catch {
-      alert("Failed to export user data. Please try again.");
+      setExportNotice("⚠️ Failed to export user data. Please try again.");
     }
   }
 
   async function deleteAccount() {
     if (deleteInput !== "DELETE") {
-      alert("Please type DELETE to confirm account deletion.");
+      setDeleteError("Please type DELETE to confirm account deletion.");
       return;
     }
     setDeleting(true);
+    setDeleteError("");
     try {
       const res = await fetch("/api/user/settings", {
         method: "DELETE",
@@ -227,10 +238,10 @@ export default function SettingsPage() {
         signOut({ callbackUrl: "/" });
       } else {
         const d = await res.json();
-        alert(d.error || "Failed to delete account");
+        setDeleteError(d.error || "Failed to delete account");
       }
     } catch {
-      alert("Network error deleting account");
+      setDeleteError("Network error deleting account");
     } finally {
       setDeleting(false);
     }
@@ -541,6 +552,11 @@ export default function SettingsPage() {
         <button type="button" className="btn btn-ghost" onClick={exportData}>
           📥 Export All My Data (JSON)
         </button>
+        {exportNotice && (
+          <p style={{ fontSize: "0.85rem", marginTop: "0.5rem", color: exportNotice.startsWith("⚠️") ? "var(--expense)" : "var(--income)" }}>
+            {exportNotice}
+          </p>
+        )}
       </div>
 
       {/* ── 5. Danger Zone ───────────────────────────────────────────── */}
@@ -586,6 +602,11 @@ export default function SettingsPage() {
             <p style={{ fontSize: "0.85rem", color: "var(--muted)", marginBottom: "0.75rem" }}>
               Please type <strong style={{ color: "var(--text)" }}>DELETE</strong> below to confirm.
             </p>
+            {deleteError && (
+              <p style={{ fontSize: "0.85rem", color: "var(--expense)", marginBottom: "0.75rem" }}>
+                ⚠️ {deleteError}
+              </p>
+            )}
             <input
               type="text"
               className="input"

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 interface Category {
   id: string;
@@ -108,19 +109,30 @@ export default function CategoriesPage() {
     }
   }
 
-  async function handleDelete(id: string, name: string) {
-    if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [actionNotice, setActionNotice] = useState("");
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    setActionNotice("");
 
     try {
-      const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/categories/${deleteTarget.id}`, { method: "DELETE" });
       if (res.ok) {
-        setCategories((prev) => prev.filter((c) => c.id !== id));
+        setCategories((prev) => prev.filter((c) => c.id !== deleteTarget.id));
+        setActionNotice("Category deleted successfully ✓");
+        setTimeout(() => setActionNotice(""), 3000);
       } else {
         const json = await res.json();
-        alert(json.error || "Could not delete category");
+        setActionNotice(`⚠️ ${json.error || "Could not delete category"}`);
       }
     } catch {
-      alert("Error deleting category");
+      setActionNotice("⚠️ Error deleting category. Please try again.");
+    } finally {
+      setDeleting(false);
+      setDeleteTarget(null);
     }
   }
 
@@ -209,7 +221,7 @@ export default function CategoriesPage() {
                 <button
                   className="btn btn-ghost btn-sm"
                   style={{ padding: "0.25rem 0.5rem", color: "var(--expense)" }}
-                  onClick={() => handleDelete(cat.id, cat.name)}
+                  onClick={() => setDeleteTarget({ id: cat.id, name: cat.name })}
                   title="Delete"
                 >
                   🗑️
@@ -354,6 +366,19 @@ export default function CategoriesPage() {
           </div>
         </div>
       )}
+
+      {/* Delete Category Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deleteTarget)}
+        title={`Delete "${deleteTarget?.name}"?`}
+        message={`Are you sure you want to delete the category "${deleteTarget?.name}"? Existing budget entries will become uncategorized.`}
+        confirmText="Delete Category"
+        variant="danger"
+        icon="🗑️"
+        loading={deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

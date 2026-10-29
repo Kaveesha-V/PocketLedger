@@ -37,6 +37,7 @@ export default function ReportsPage() {
   const [month, setMonth] = useState(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`);
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [exportNotice, setExportNotice] = useState("");
 
   useEffect(() => {
     setLoading(true);
@@ -122,8 +123,10 @@ export default function ReportsPage() {
       doc.text("PocketLedger — Smart Budget & Friend Money Tracker", 14, 285);
 
       doc.save(`PocketLedger_Report_${month}.pdf`);
+      setExportNotice("PDF report downloaded ✓");
+      setTimeout(() => setExportNotice(""), 3000);
     } catch {
-      alert("Error generating PDF. Please try again.");
+      setExportNotice("⚠️ Error generating PDF. Please try again.");
     }
   }
 
@@ -232,7 +235,7 @@ export default function ReportsPage() {
           </div>
 
           {/* Export buttons */}
-          <div style={{ marginTop: "1.5rem", display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+          <div style={{ marginTop: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
             <button
               className="btn btn-ghost btn-sm"
               onClick={exportPDF}
@@ -255,6 +258,11 @@ export default function ReportsPage() {
             >
               📋 Export CSV
             </a>
+            {exportNotice && (
+              <span style={{ fontSize: "0.85rem", color: exportNotice.startsWith("⚠️") ? "var(--expense)" : "var(--income)", fontWeight: 500 }}>
+                {exportNotice}
+              </span>
+            )}
           </div>
         </>
       )}
