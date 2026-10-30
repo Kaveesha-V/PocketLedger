@@ -570,13 +570,13 @@ function ReminderPanel({
 
   useEffect(() => {
     const templates = parseTemplates(null);
-    const net = friend.balance.net;
+    const net = friend?.balance?.net ?? 0;
     const templateKey = Math.abs(net) < 0.01 ? "settled" : net > 0 ? "theyOweMe" : "iOweThem";
     const rendered = renderTemplate(templates[templateKey], {
       friend: friend.name,
       currency,
       amount: formatCurrency(Math.abs(net), currency),
-      count: friend.balance.timesGave + friend.balance.timesBorrowed,
+      count: (friend.balance?.timesGave ?? 0) + (friend.balance?.timesBorrowed ?? 0),
       lastDate: friend.timeline[friend.timeline.length - 1]?.date
         ? formatDate(friend.timeline[friend.timeline.length - 1].date, "short")
         : "—",

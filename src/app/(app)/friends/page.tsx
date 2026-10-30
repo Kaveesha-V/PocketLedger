@@ -12,9 +12,9 @@ interface FriendSummary {
   name: string;
   email: string | null;
   phone: string | null;
-  balance: { net: number; timesGave: number; timesBorrowed: number };
-  txCount: number;
-  lastActivity: string | null;
+  balance?: { net: number; timesGave?: number; timesBorrowed?: number } | null;
+  txCount?: number;
+  lastActivity?: string | null;
 }
 
 type Filter = "all" | "owe-me" | "i-owe" | "settled";
@@ -26,23 +26,48 @@ function AddFriendModal({ onClose, onAdd }: { onClose: () => void; onAdd: (f: Fr
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.name.trim()) {
+      setError("Please enter a friend's name.");
+      return;
+    }
+
     setLoading(true);
     setError("");
+
     try {
+      const payload: Record<string, string> = {
+        name: form.name.trim(),
+      };
+      if (form.email.trim()) payload.email = form.email.trim();
+      if (form.phone.trim()) payload.phone = form.phone.trim();
+      if (form.note.trim()) payload.note = form.note.trim();
+
       const res = await fetch("/api/friends", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
+
       const json = await res.json();
-      if (json.error) {
-        setError(json.error);
+      if (!res.ok || json.error) {
+        setError(json.error || "Failed to add friend.");
         return;
       }
-      onAdd(json.data);
+
+      const safeFriend: FriendSummary = {
+        id: json.data.id,
+        name: json.data.name,
+        email: json.data.email ?? null,
+        phone: json.data.phone ?? null,
+        balance: json.data.balance ?? { net: 0, timesGave: 0, timesBorrowed: 0 },
+        txCount: json.data.txCount ?? 0,
+        lastActivity: json.data.lastActivity ?? null,
+      };
+
+      onAdd(safeFriend);
       onClose();
     } catch {
-      setError("Something went wrong.");
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -157,7 +182,6 @@ export default function FriendsPage() {
   const currency = "LKR";
 
   function loadFriends() {
-    setLoading(true);
     fetch("/api/friends")
       .then((r) => r.json())
       .then((j) => {
@@ -187,9 +211,10 @@ export default function FriendsPage() {
 
   const filtered = friends.filter((f) => {
     if (search && !f.name.toLowerCase().includes(search.toLowerCase())) return false;
-    if (filter === "owe-me" && f.balance.net <= 0.01) return false;
-    if (filter === "i-owe" && f.balance.net >= -0.01) return false;
-    if (filter === "settled" && Math.abs(f.balance.net) > 0.01) return false;
+    const net = f.balance?.net ?? 0;
+    if (filter === "owe-me" && net <= 0.01) return false;
+    if (filter === "i-owe" && net >= -0.01) return false;
+    if (filter === "settled" && Math.abs(net) > 0.01) return false;
     return true;
   });
 
@@ -209,34 +234,42 @@ export default function FriendsPage() {
             Track money lent, borrowed, and net balances with each friend
           </p>
         </div>
-        <button id="btn-open-add-friend" className="btn btn-primary" onClick={() => setShowModal(true)}>
+        <button id="btn-open-add-friend" className="btn btn-primary" onClick={() => setShowModal(true)} style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
           <Plus size={16} /> Add Friend
         </button>
       </div>
 
-      {/* Search + filters */}
-      <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.25rem", flexWrap: "wrap", alignItems: "center" }}>
-        <input
-          className="input"
-          style={{ flex: "1 1 200px", maxWidth: "280px" }}
-          placeholder="Search friends…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+      {/* Controls: Search + Filter tabs */}
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center", marginBottom: "1.5rem" }}>
+        <div style={{ position: "relative", flex: "1 1 240px", maxWidth: "340px" }}>
+          <Search size={16} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "var(--muted)" }} />
+          <input
+            className="input"
+            style={{ paddingLeft: "2.25rem" }}
+            placeholder="Search friends…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <div style={{ display: "flex", gap: "0.375rem", flexWrap: "wrap" }}>
           {FILTERS.map((fl) => (
             <button
               key={fl.id}
+              type="button"
               className="btn btn-sm"
               style={{
                 background: filter === fl.id ? "var(--primary)" : "var(--surface)",
                 color: filter === fl.id ? "#fff" : "var(--text)",
                 border: `1px solid ${filter === fl.id ? "var(--primary)" : "var(--border)"}`,
                 fontWeight: filter === fl.id ? 600 : 400,
+                display: "inline-flex",
+                alignItems: "center",
               }}
               onClick={() => setFilter(fl.id)}
             >
-              <span style={{ display: "inline-flex", alignItems: "center" }}>{fl.icon}{fl.label}</span>
+              {fl.icon}
+              {fl.label}
             </button>
           ))}
         </div>
@@ -263,7 +296,7 @@ export default function FriendsPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1rem" }}>
           {filtered.map((f) => {
             const hue = stringToHue(f.name);
-            const net = f.balance.net;
+            const net = f.balance?.net ?? 0;
             const netColor = net > 0.01 ? "var(--income)" : net < -0.01 ? "var(--expense)" : "var(--muted)";
             const netLabel = net > 0.01 ? `Owes you ${formatCurrency(net, currency)}` : net < -0.01 ? `You owe ${formatCurrency(Math.abs(net), currency)}` : "Settled";
             return (
@@ -314,7 +347,7 @@ export default function FriendsPage() {
                       </p>
                     )}
                     <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: "0.15rem 0 0" }}>
-                      {f.txCount} tx{f.txCount !== 1 ? "s" : ""} · {f.lastActivity ? `Last: ${formatDate(f.lastActivity, "short")}` : "No activity"}
+                      {f.txCount ?? 0} tx{(f.txCount ?? 0) !== 1 ? "s" : ""} · {f.lastActivity ? `Last: ${formatDate(f.lastActivity, "short")}` : "No activity"}
                     </p>
                   </div>
                 </Link>
@@ -371,7 +404,13 @@ export default function FriendsPage() {
       {showModal && (
         <AddFriendModal
           onClose={() => setShowModal(false)}
-          onAdd={(f) => setFriends((prev) => [...prev, f])}
+          onAdd={(f) => {
+            setFriends((prev) => {
+              const exists = prev.some((p) => p.id === f.id);
+              return exists ? prev : [f, ...prev];
+            });
+            loadFriends();
+          }}
         />
       )}
 
