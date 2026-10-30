@@ -30,7 +30,6 @@ import {
   Calendar,
   CheckCircle2,
   ChevronRight,
-  Sparkles,
   ArrowRight,
 } from "lucide-react";
 

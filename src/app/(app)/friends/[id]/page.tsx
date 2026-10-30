@@ -22,7 +22,6 @@ import {
   ArrowDownLeft,
   CheckCircle2,
   RotateCcw,
-  Sparkles,
   MessageCircle,
   AlertTriangle,
   AlertCircle,
@@ -1193,7 +1192,7 @@ export default function FriendDetailPage() {
             onClick={() => setShowSettleModal(true)}
             disabled={settling}
           >
-            <Sparkles size={16} /> Settle up
+            <CheckCircle2 size={16} /> Settle up
           </button>
         )}
       </div>
@@ -1427,7 +1426,7 @@ export default function FriendDetailPage() {
         message={`Are you sure you want to settle all pending transactions? This will bring the net balance with ${friend.name} to 0.`}
         confirmText="Yes, Settle Up"
         variant="primary"
-        icon={<Sparkles size={22} style={{ color: "var(--primary)" }} />}
+        icon={<CheckCircle2 size={22} style={{ color: "var(--primary)" }} />}
         loading={settling}
         onConfirm={handleSettle}
         onCancel={() => setShowSettleModal(false)}

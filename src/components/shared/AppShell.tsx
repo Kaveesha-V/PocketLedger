@@ -413,6 +413,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           top: 0,
           left: 0,
           bottom: 0,
+          height: "100dvh",
+          maxHeight: "100dvh",
           width: "min(320px, 86vw)",
           background: "var(--surface)",
           borderRight: "1px solid var(--border)",
@@ -423,13 +425,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           transform: drawerOpen ? "translateX(0)" : "translateX(-100%)",
           transition: "transform 260ms cubic-bezier(0.16, 1, 0.3, 1)",
           overflowY: "auto",
+          WebkitOverflowScrolling: "touch",
+          overscrollBehavior: "contain",
           paddingBottom: "env(safe-area-inset-bottom, 1rem)",
         }}
         aria-label="Navigation Drawer"
       >
-        {/* Drawer Header */}
+        {/* Drawer Header (sticky at top of drawer) */}
         <div
           style={{
+            position: "sticky",
+            top: 0,
+            background: "var(--surface)",
+            zIndex: 2,
             padding: "1.125rem 1.25rem",
             display: "flex",
             alignItems: "center",

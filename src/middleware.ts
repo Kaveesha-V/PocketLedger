@@ -29,8 +29,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // If already logged in and visiting auth pages, redirect to dashboard
-  if (token && pathname.startsWith("/auth")) {
+  // If already logged in and visiting root landing or auth pages, redirect to dashboard
+  if (token && (pathname === "/" || pathname.startsWith("/auth"))) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);

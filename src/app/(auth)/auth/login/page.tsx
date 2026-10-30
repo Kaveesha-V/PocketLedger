@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { Suspense } from "react";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Lock, Mail } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -39,11 +39,13 @@ function LoginForm() {
 
   return (
     <>
-      <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <h1 style={{ fontSize: "1.625rem", marginBottom: "0.375rem" }}>Welcome back</h1>
-        <p style={{ color: "var(--muted)", fontSize: "0.9rem" }}>
-          New here?{" "}
-          <Link href="/auth/signup" style={{ color: "var(--primary)", fontWeight: 500 }}>
+      <div style={{ textAlign: "center", marginBottom: "1.75rem" }}>
+        <h1 style={{ fontSize: "1.625rem", fontWeight: 700, marginBottom: "0.35rem", letterSpacing: "-0.01em" }}>
+          Welcome back
+        </h1>
+        <p style={{ color: "var(--muted)", fontSize: "0.875rem" }}>
+          Don't have an account?{" "}
+          <Link href="/auth/signup" style={{ color: "var(--primary)", fontWeight: 600 }}>
             Create account
           </Link>
         </p>
@@ -53,7 +55,21 @@ function LoginForm() {
         id="btn-google-login"
         type="button"
         className="btn btn-ghost"
-        style={{ width: "100%", marginBottom: "0.75rem" }}
+        style={{
+          width: "100%",
+          height: "44px",
+          borderRadius: "9999px",
+          border: "1px solid var(--border)",
+          background: "var(--surface-2)",
+          marginBottom: "0.625rem",
+          fontWeight: 600,
+          fontSize: "0.9375rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "0.625rem",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+        }}
         onClick={() => signIn("google", { callbackUrl, prompt: "select_account" })}
       >
         <svg width="18" height="18" viewBox="0 0 24 24">
@@ -74,10 +90,10 @@ function LoginForm() {
             background: "none",
             border: "none",
             color: "var(--muted)",
-            fontSize: "0.8rem",
+            fontSize: "0.78rem",
             cursor: "pointer",
             textDecoration: "underline",
-            padding: "0.25rem 0.5rem",
+            padding: "0.2rem 0.5rem",
           }}
         >
           Use a different Google account
@@ -86,7 +102,7 @@ function LoginForm() {
 
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
         <div style={{ flex: 1, height: "1px", background: "var(--border)" }} />
-        <span style={{ color: "var(--muted)", fontSize: "0.8rem" }}>or</span>
+        <span style={{ color: "var(--muted)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>or</span>
         <div style={{ flex: 1, height: "1px", background: "var(--border)" }} />
       </div>
 
@@ -94,7 +110,7 @@ function LoginForm() {
         <div
           style={{
             padding: "0.75rem 1rem",
-            borderRadius: "var(--radius-sm)",
+            borderRadius: "var(--radius-sm, 10px)",
             marginBottom: "1rem",
             fontSize: "0.875rem",
             background: "color-mix(in srgb, var(--expense) 12%, transparent)",
@@ -102,52 +118,87 @@ function LoginForm() {
             display: "flex",
             alignItems: "center",
             gap: "0.5rem",
+            border: "1px solid color-mix(in srgb, var(--expense) 25%, transparent)",
           }}
         >
-          <AlertCircle size={15} /> {error}
+          <AlertCircle size={15} style={{ flexShrink: 0 }} /> {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="field">
-          <label className="label" htmlFor="email">Email address</label>
-          <input
-            id="email"
-            className="input"
-            type="email"
-            placeholder="you@example.com"
-            required
-            value={form.email}
-            onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-          />
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div className="field" style={{ margin: 0 }}>
+          <label className="label" htmlFor="email" style={{ fontSize: "0.85rem", fontWeight: 600 }}>
+            Email address
+          </label>
+          <div style={{ position: "relative" }}>
+            <Mail size={16} style={{ position: "absolute", left: "0.85rem", top: "50%", transform: "translateY(-50%)", color: "var(--muted)", pointerEvents: "none" }} />
+            <input
+              id="email"
+              className="input"
+              type="email"
+              placeholder="you@example.com"
+              required
+              style={{
+                height: "44px",
+                fontSize: "16px",
+                paddingLeft: "2.35rem",
+                borderRadius: "var(--radius-sm, 10px)",
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+              }}
+              value={form.email}
+              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+            />
+          </div>
         </div>
 
-        <div className="field">
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.375rem" }}>
-            <label className="label" htmlFor="password" style={{ margin: 0 }}>Password</label>
-            <Link href="/auth/forgot-password" style={{ fontSize: "0.8rem", color: "var(--primary)" }}>
+        <div className="field" style={{ margin: 0 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.375rem" }}>
+            <label className="label" htmlFor="password" style={{ margin: 0, fontSize: "0.85rem", fontWeight: 600 }}>
+              Password
+            </label>
+            <Link href="/auth/forgot-password" style={{ fontSize: "0.8rem", color: "var(--primary)", fontWeight: 500 }}>
               Forgot password?
             </Link>
           </div>
-          <input
-            id="password"
-            className="input"
-            type="password"
-            placeholder="Your password"
-            required
-            value={form.password}
-            onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-          />
+          <div style={{ position: "relative" }}>
+            <Lock size={16} style={{ position: "absolute", left: "0.85rem", top: "50%", transform: "translateY(-50%)", color: "var(--muted)", pointerEvents: "none" }} />
+            <input
+              id="password"
+              className="input"
+              type="password"
+              placeholder="Your password"
+              required
+              style={{
+                height: "44px",
+                fontSize: "16px",
+                paddingLeft: "2.35rem",
+                borderRadius: "var(--radius-sm, 10px)",
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+              }}
+              value={form.password}
+              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+            />
+          </div>
         </div>
 
         <button
           id="btn-login-submit"
           type="submit"
           className="btn btn-primary"
-          style={{ width: "100%", marginTop: "0.5rem" }}
+          style={{
+            width: "100%",
+            height: "44px",
+            marginTop: "0.5rem",
+            borderRadius: "9999px",
+            fontWeight: 600,
+            fontSize: "0.95rem",
+            boxShadow: "0 4px 14px color-mix(in srgb, var(--primary) 35%, transparent)",
+          }}
           disabled={loading}
         >
-          {loading ? "Signing in…" : "Sign in →"}
+          {loading ? "Signing in…" : "Sign In →"}
         </button>
       </form>
     </>
