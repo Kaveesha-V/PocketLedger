@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { handleAppSignOut } from "@/lib/logout";
 import { DEFAULT_TEMPLATES, ReminderTemplates } from "@/lib/messages";
 import {
   User,
@@ -249,7 +250,7 @@ export default function SettingsPage() {
         method: "DELETE",
       });
       if (res.ok) {
-        signOut({ callbackUrl: "/" });
+        handleAppSignOut("/auth/login");
       } else {
         const d = await res.json();
         setDeleteError(d.error || "Failed to delete account");
