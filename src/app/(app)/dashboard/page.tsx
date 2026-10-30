@@ -493,30 +493,29 @@ export default function DashboardPage() {
           {/* Overdue Alerts if any */}
           {(data?.overdue?.length ?? 0) > 0 && (
             <div
-              className="card"
+              className="card dashboard-card"
               style={{
                 borderLeft: "4px solid var(--expense)",
                 background: "color-mix(in srgb, var(--expense) 8%, var(--surface))",
-                padding: "1.25rem",
               }}
             >
-              <h3 style={{ fontSize: "1rem", margin: "0 0 0.75rem", color: "var(--expense)" }}>
+              <h3 style={{ fontSize: "0.95rem", margin: "0 0 0.75rem", color: "var(--expense)" }}>
                 Overdue Reminders ({data?.overdue.length})
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {data?.overdue.map((o) => (
-                  <div key={o.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem" }}>
-                    <div>
-                      <p style={{ fontWeight: 600, fontSize: "0.875rem", margin: 0 }}>{o.friendName}</p>
-                      <p style={{ fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>
+                  <div key={o.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>
+                    <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+                      <p style={{ fontWeight: 600, fontSize: "0.85rem", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{o.friendName}</p>
+                      <p style={{ fontSize: "0.72rem", color: "var(--muted)", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         Due: {formatDate(o.dueDate, "short")} {o.reason ? `· ${o.reason}` : ""}
                       </p>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                      <span className="money" style={{ fontWeight: 700, color: "var(--expense)", fontSize: "0.9rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexShrink: 0 }}>
+                      <span className="money" style={{ fontWeight: 700, color: "var(--expense)", fontSize: "0.85rem" }}>
                         {fmt(o.amount)}
                       </span>
-                      <Link href={`/friends/${o.friendId}`} className="btn btn-sm btn-ghost" style={{ padding: "0.25rem 0.5rem" }}>
+                      <Link href={`/friends/${o.friendId}`} className="btn btn-sm btn-ghost" style={{ padding: "0.2rem 0.45rem", minHeight: "26px", fontSize: "0.72rem" }}>
                         View
                       </Link>
                     </div>
@@ -527,10 +526,10 @@ export default function DashboardPage() {
           )}
 
           {/* Pending Friends List */}
-          <div className="card" style={{ padding: "1.25rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-              <h3 style={{ fontSize: "1rem", margin: 0 }}>Pending Friend Balances</h3>
-              <Link href="/friends" style={{ fontSize: "0.8125rem", color: "var(--primary)", fontWeight: 500, textDecoration: "none" }}>
+          <div className="card dashboard-card">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.875rem", gap: "0.5rem" }}>
+              <h3 style={{ fontSize: "0.95rem", margin: 0 }}>Pending Friend Balances</h3>
+              <Link href="/friends" style={{ fontSize: "0.78rem", color: "var(--primary)", fontWeight: 500, textDecoration: "none", flexShrink: 0 }}>
                 All Friends →
               </Link>
             </div>
@@ -545,7 +544,7 @@ export default function DashboardPage() {
                 </Link>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
                 {data?.friends.top5.map((f) => {
                   const hue = stringToHue(f.name);
                   const isPositive = f.net > 0;
@@ -555,45 +554,50 @@ export default function DashboardPage() {
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "0.75rem",
-                        padding: "0.625rem 0.75rem",
+                        justifyContent: "space-between",
+                        gap: "0.5rem",
+                        padding: "0.5rem 0.625rem",
                         borderRadius: "var(--radius-sm)",
                         background: "var(--surface-2)",
+                        minWidth: 0,
+                        width: "100%",
                       }}
                     >
-                      <div
-                        style={{
-                          width: "36px",
-                          height: "36px",
-                          borderRadius: "50%",
-                          background: `hsl(${hue}, 55%, 50%)`,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "#fff",
-                          fontWeight: 700,
-                          fontSize: "0.85rem",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {initials(f.name)}
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", minWidth: 0, flex: 1, overflow: "hidden" }}>
+                        <div
+                          style={{
+                            width: "34px",
+                            height: "34px",
+                            borderRadius: "50%",
+                            background: `hsl(${hue}, 55%, 50%)`,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "#fff",
+                            fontWeight: 700,
+                            fontSize: "0.8rem",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {initials(f.name)}
+                        </div>
+                        <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+                          <p style={{ fontWeight: 600, fontSize: "0.85rem", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {f.name}
+                          </p>
+                          <p style={{ fontSize: "0.72rem", color: isPositive ? "var(--income)" : "var(--expense)", margin: 0, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {isPositive ? "Owes you" : "You owe"} · {f.lastDate ? formatDate(f.lastDate, "short") : "Recent"}
+                          </p>
+                        </div>
                       </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontWeight: 600, fontSize: "0.9rem", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {f.name}
-                        </p>
-                        <p style={{ fontSize: "0.75rem", color: isPositive ? "var(--income)" : "var(--expense)", margin: 0, fontWeight: 500 }}>
-                          {isPositive ? "Owes you" : "You owe"} · {f.lastDate ? formatDate(f.lastDate, "short") : "Recent"}
-                        </p>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <p className="money" style={{ fontWeight: 700, color: isPositive ? "var(--income)" : "var(--expense)", margin: 0, fontSize: "0.95rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexShrink: 0 }}>
+                        <span className="money" style={{ fontWeight: 700, color: isPositive ? "var(--income)" : "var(--expense)", margin: 0, fontSize: "0.85rem" }}>
                           {fmt(Math.abs(f.net))}
-                        </p>
+                        </span>
+                        <Link href={`/friends/${f.id}`} className="btn btn-ghost btn-sm" style={{ padding: "0.2rem 0.45rem", minHeight: "26px", fontSize: "0.72rem" }}>
+                          Open
+                        </Link>
                       </div>
-                      <Link href={`/friends/${f.id}`} className="btn btn-ghost btn-sm" style={{ padding: "0.25rem 0.5rem" }}>
-                        Open
-                      </Link>
                     </div>
                   );
                 })}
@@ -605,10 +609,10 @@ export default function DashboardPage() {
         {/* Right Column: Recent Activity & Categories */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           {/* Recent Money Activity (Budget & Friends) */}
-          <div className="card" style={{ padding: "1.25rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-              <h3 style={{ fontSize: "1rem", margin: 0 }}>Recent Money Activity</h3>
-              <Link href="/budget" style={{ fontSize: "0.8125rem", color: "var(--primary)", fontWeight: 500, textDecoration: "none" }}>
+          <div className="card dashboard-card">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.875rem", gap: "0.5rem" }}>
+              <h3 style={{ fontSize: "0.95rem", margin: 0 }}>Recent Money Activity</h3>
+              <Link href="/budget" style={{ fontSize: "0.78rem", color: "var(--primary)", fontWeight: 500, textDecoration: "none", flexShrink: 0 }}>
                 Budget Sheet →
               </Link>
             </div>
@@ -698,7 +702,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Expense Breakdown / Category Chart */}
-          <div className="card" style={{ minWidth: 0, overflow: "hidden" }}>
+          <div className="card dashboard-card" style={{ minWidth: 0, overflow: "hidden" }}>
             <h3 style={{ fontSize: "1rem", margin: "0 0 1rem" }}>Expense by Category</h3>
             {(data?.categoryBreakdown?.length ?? 0) > 0 ? (
               <div style={{ width: "100%", minWidth: 0, overflow: "hidden" }}>
