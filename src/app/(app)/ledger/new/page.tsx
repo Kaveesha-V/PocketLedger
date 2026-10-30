@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/format";
 
@@ -11,15 +11,23 @@ interface Friend {
   net?: number;
 }
 
-export default function NewLedgerTransactionPage() {
+function NewLedgerTransactionForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const queryDir = searchParams.get("direction");
+  const queryFriendId = searchParams.get("friendId");
+
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [friendId, setFriendId] = useState("");
+  const [friendId, setFriendId] = useState(queryFriendId || "");
   const [direction, setDirection] = useState<
     "I_GAVE" | "I_BORROWED" | "THEY_REPAID" | "I_REPAID"
-  >("I_GAVE");
+  >(
+    queryDir === "I_BORROWED" || queryDir === "THEY_REPAID" || queryDir === "I_REPAID"
+      ? queryDir
+      : "I_GAVE"
+  );
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [reason, setReason] = useState("");
@@ -29,16 +37,26 @@ export default function NewLedgerTransactionPage() {
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
+    if (queryDir === "I_BORROWED" || queryDir === "THEY_REPAID" || queryDir === "I_REPAID" || queryDir === "I_GAVE") {
+      setDirection(queryDir);
+    }
+  }, [queryDir]);
+
+  useEffect(() => {
     fetch("/api/friends")
       .then((r) => r.json())
       .then((j) => {
         if (j.data) {
           setFriends(j.data);
-          if (j.data.length > 0) setFriendId(j.data[0].id);
+          if (queryFriendId && j.data.some((f: Friend) => f.id === queryFriendId)) {
+            setFriendId(queryFriendId);
+          } else if (j.data.length > 0 && !friendId) {
+            setFriendId(j.data[0].id);
+          }
         }
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [queryFriendId]);
 
   const selectedFriend = friends.find((f) => f.id === friendId);
   const currentNet = selectedFriend?.net ?? 0;
@@ -147,13 +165,14 @@ export default function NewLedgerTransactionPage() {
           {/* Direction Segmented buttons */}
           <div>
             <label className="label">Transaction Type</label>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "0.5rem" }}>
               <button
                 type="button"
                 className={`btn btn-sm ${direction === "I_GAVE" ? "btn-primary" : "btn-ghost"}`}
                 style={{
                   background: direction === "I_GAVE" ? "var(--income)" : undefined,
                   color: direction === "I_GAVE" ? "#fff" : undefined,
+                  borderColor: direction === "I_GAVE" ? "var(--income)" : undefined,
                 }}
                 onClick={() => setDirection("I_GAVE")}
               >
@@ -165,6 +184,7 @@ export default function NewLedgerTransactionPage() {
                 style={{
                   background: direction === "I_BORROWED" ? "var(--expense)" : undefined,
                   color: direction === "I_BORROWED" ? "#fff" : undefined,
+                  borderColor: direction === "I_BORROWED" ? "var(--expense)" : undefined,
                 }}
                 onClick={() => setDirection("I_BORROWED")}
               >
@@ -173,6 +193,11 @@ export default function NewLedgerTransactionPage() {
               <button
                 type="button"
                 className={`btn btn-sm ${direction === "THEY_REPAID" ? "btn-primary" : "btn-ghost"}`}
+                style={{
+                  background: direction === "THEY_REPAID" ? "var(--primary)" : undefined,
+                  color: direction === "THEY_REPAID" ? "#fff" : undefined,
+                  borderColor: direction === "THEY_REPAID" ? "var(--primary)" : undefined,
+                }}
                 onClick={() => setDirection("THEY_REPAID")}
               >
                 ✅ They Paid Me
@@ -180,10 +205,52 @@ export default function NewLedgerTransactionPage() {
               <button
                 type="button"
                 className={`btn btn-sm ${direction === "I_REPAID" ? "btn-primary" : "btn-ghost"}`}
+                style={{
+                  background: direction === "I_REPAID" ? "color-mix(in srgb, var(--accent) 30%, var(--surface))" : undefined,
+                  color: direction === "I_REPAID" ? "var(--accent)" : undefined,
+                  borderColor: direction === "I_REPAID" ? "var(--accent)" : undefined,
+                  fontWeight: direction === "I_REPAID" ? 600 : undefined,
+                }}
                 onClick={() => setDirection("I_REPAID")}
               >
                 🤝 I Paid Them
               </button>
+            </div>
+
+            <div
+              style={{
+                marginTop: "0.5rem",
+                padding: "0.5rem 0.75rem",
+                borderRadius: "var(--radius-sm)",
+                fontSize: "0.8125rem",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                background:
+                  direction === "I_GAVE"
+                    ? "color-mix(in srgb, var(--income) 12%, var(--surface))"
+                    : direction === "I_BORROWED"
+                    ? "color-mix(in srgb, var(--expense) 12%, var(--surface))"
+                    : direction === "THEY_REPAID"
+                    ? "color-mix(in srgb, var(--primary) 12%, var(--surface))"
+                    : "color-mix(in srgb, var(--accent) 15%, var(--surface))",
+                color:
+                  direction === "I_GAVE"
+                    ? "var(--income)"
+                    : direction === "I_BORROWED"
+                    ? "var(--expense)"
+                    : direction === "THEY_REPAID"
+                    ? "var(--primary)"
+                    : "var(--text)",
+              }}
+            >
+              <span>{direction === "I_GAVE" ? "💸" : direction === "I_BORROWED" ? "🤲" : direction === "THEY_REPAID" ? "✅" : "🤝"}</span>
+              <span>
+                {direction === "I_GAVE" && "You gave money to this friend. This adds to what they owe you."}
+                {direction === "I_BORROWED" && "You borrowed money from this friend. This adds to what you owe them."}
+                {direction === "THEY_REPAID" && "This friend returned money to you. Reduces their debt."}
+                {direction === "I_REPAID" && "You repaid money back to this friend. Reduces what you owe."}
+              </span>
             </div>
           </div>
 
@@ -277,5 +344,13 @@ export default function NewLedgerTransactionPage() {
         </form>
       )}
     </div>
+  );
+}
+
+export default function NewLedgerTransactionPage() {
+  return (
+    <Suspense fallback={<div className="page-container" style={{ maxWidth: "680px", padding: "2rem" }}><div className="skeleton" style={{ height: "350px", borderRadius: "var(--radius)" }} /></div>}>
+      <NewLedgerTransactionForm />
+    </Suspense>
   );
 }

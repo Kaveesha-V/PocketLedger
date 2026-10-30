@@ -390,9 +390,6 @@ export default function FriendsPage() {
         onCancel={() => setDeleteTarget(null)}
       />
 
-      <Link href="/ledger/new" className="fab" aria-label="Quick add transaction">
-        +
-      </Link>
     </div>
   );
 }
