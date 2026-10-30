@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Download, Share, PlusSquare, X, Sparkles } from "lucide-react";
+import { Download, Share, PlusSquare, X } from "lucide-react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -185,7 +185,6 @@ export function PwaInstallPrompt() {
               <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: 700, color: "var(--text)" }}>
                 Install PocketLedger
               </h4>
-              <Sparkles size={14} style={{ color: "var(--accent)" }} />
             </div>
             <p style={{ margin: "0.2rem 0 0", fontSize: "0.78rem", color: "var(--muted)", lineHeight: 1.4 }}>
               Fast standalone app experience, offline access, and instant reminder notifications.
