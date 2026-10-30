@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Plus, X, ArrowUpRight, ArrowDownLeft, BarChart3, Users } from "lucide-react";
 
 export function QuickActionFab() {
   const [open, setOpen] = useState(false);
@@ -22,7 +23,7 @@ export function QuickActionFab() {
       label: "Lend Money (I Gave)",
       sub: "Record money you gave to a friend",
       href: "/ledger/new?direction=I_GAVE",
-      icon: "💸",
+      icon: ArrowUpRight,
       color: "var(--income)",
       bg: "color-mix(in srgb, var(--income) 15%, var(--surface))",
     },
@@ -30,7 +31,7 @@ export function QuickActionFab() {
       label: "Borrow Money (I Borrowed)",
       sub: "Record money you borrowed from a friend",
       href: "/ledger/new?direction=I_BORROWED",
-      icon: "🤲",
+      icon: ArrowDownLeft,
       color: "var(--expense)",
       bg: "color-mix(in srgb, var(--expense) 15%, var(--surface))",
     },
@@ -38,7 +39,7 @@ export function QuickActionFab() {
       label: "Add Budget Expense",
       sub: "Log daily budget expense or income",
       href: "/budget",
-      icon: "📊",
+      icon: BarChart3,
       color: "var(--primary)",
       bg: "color-mix(in srgb, var(--primary) 15%, var(--surface))",
     },
@@ -46,7 +47,7 @@ export function QuickActionFab() {
       label: "Manage Friends",
       sub: "View friends and settled accounts",
       href: "/friends",
-      icon: "👥",
+      icon: Users,
       color: "var(--accent)",
       bg: "color-mix(in srgb, var(--accent) 15%, var(--surface))",
     },
@@ -60,7 +61,7 @@ export function QuickActionFab() {
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            backgroundColor: "rgba(0, 0, 0, 0.65)",
             backdropFilter: "blur(4px)",
             WebkitBackdropFilter: "blur(4px)",
             zIndex: 90,
@@ -85,54 +86,56 @@ export function QuickActionFab() {
             maxWidth: "calc(100vw - 2.5rem)",
           }}
         >
-          {ACTIONS.map((action, i) => (
-            <Link
-              key={action.label}
-              href={action.href}
-              onClick={() => setOpen(false)}
-              className="card card-interactive"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.875rem",
-                padding: "0.75rem 1rem",
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                boxShadow: "var(--shadow-lg)",
-                borderRadius: "var(--radius)",
-                textDecoration: "none",
-                color: "var(--text)",
-                minWidth: "260px",
-                transform: "translateY(0)",
-                animation: `fadeIn ${120 + i * 35}ms ease-out`,
-              }}
-            >
-              <div
+          {ACTIONS.map((action, i) => {
+            const Icon = action.icon;
+            return (
+              <Link
+                key={action.label}
+                href={action.href}
+                onClick={() => setOpen(false)}
+                className="card card-interactive"
                 style={{
-                  width: "38px",
-                  height: "38px",
-                  borderRadius: "50%",
-                  background: action.bg,
-                  color: action.color,
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.2rem",
-                  flexShrink: 0,
+                  gap: "0.875rem",
+                  padding: "0.75rem 1rem",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
+                  boxShadow: "var(--shadow-lg)",
+                  borderRadius: "var(--radius)",
+                  textDecoration: "none",
+                  color: "var(--text)",
+                  minWidth: "260px",
+                  transform: "translateY(0)",
+                  animation: `fadeIn ${120 + i * 35}ms ease-out`,
                 }}
               >
-                {action.icon}
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ margin: 0, fontWeight: 600, fontSize: "0.875rem", color: "var(--text)" }}>
-                  {action.label}
-                </p>
-                <p style={{ margin: "0.1rem 0 0", fontSize: "0.72rem", color: "var(--muted)" }}>
-                  {action.sub}
-                </p>
-              </div>
-            </Link>
-          ))}
+                <div
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "12px",
+                    background: action.bg,
+                    color: action.color,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Icon size={20} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ margin: 0, fontWeight: 600, fontSize: "0.875rem", color: "var(--text)" }}>
+                    {action.label}
+                  </p>
+                  <p style={{ margin: "0.1rem 0 0", fontSize: "0.72rem", color: "var(--muted)" }}>
+                    {action.sub}
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
 
@@ -145,23 +148,16 @@ export function QuickActionFab() {
         onClick={() => setOpen((prev) => !prev)}
         style={{
           zIndex: 96,
-          transform: open ? "rotate(45deg)" : "none",
           transition: "transform 220ms cubic-bezier(0.16, 1, 0.3, 1), background var(--transition), box-shadow var(--transition)",
           background: open ? "var(--expense)" : "linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)",
           color: "#fff",
           boxShadow: open ? "0 4px 14px rgba(244, 63, 94, 0.4)" : "0 8px 24px color-mix(in srgb, var(--primary) 45%, transparent)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <span
-          style={{
-            fontSize: "1.875rem",
-            lineHeight: 1,
-            display: "inline-block",
-            transform: "translateY(-1px)",
-          }}
-        >
-          +
-        </span>
+        {open ? <X size={24} /> : <Plus size={24} />}
       </button>
 
       <style>{`
@@ -177,11 +173,11 @@ export function QuickActionFab() {
         }
         @media (max-width: 1023px) {
           .fab-speed-dial-btn {
-            bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)) !important;
+            bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)) !important;
             right: 1.25rem !important;
           }
           .fab-speed-dial-menu {
-            bottom: calc(4.75rem + 3.5rem + 0.75rem + env(safe-area-inset-bottom, 0px)) !important;
+            bottom: calc(5.5rem + 3.5rem + 0.75rem + env(safe-area-inset-bottom, 0px)) !important;
             right: 1.25rem !important;
           }
         }

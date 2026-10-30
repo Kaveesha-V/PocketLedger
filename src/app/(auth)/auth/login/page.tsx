@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { Suspense } from "react";
+import { AlertCircle } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -79,9 +80,12 @@ function LoginForm() {
             fontSize: "0.875rem",
             background: "color-mix(in srgb, var(--expense) 12%, transparent)",
             color: "var(--expense)",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
           }}
         >
-          ⚠️ {error}
+          <AlertCircle size={15} /> {error}
         </div>
       )}
 

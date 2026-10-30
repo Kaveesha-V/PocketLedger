@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Mail } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -20,7 +21,22 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>📧</div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
+          <div
+            style={{
+              width: "64px",
+              height: "64px",
+              borderRadius: "50%",
+              background: "rgba(139, 92, 246, 0.15)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--primary)",
+            }}
+          >
+            <Mail size={32} />
+          </div>
+        </div>
         <h1 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Check your email</h1>
         <p style={{ color: "var(--muted)", marginBottom: "1.5rem" }}>
           If an account exists for <strong>{email}</strong>, you'll receive a reset link

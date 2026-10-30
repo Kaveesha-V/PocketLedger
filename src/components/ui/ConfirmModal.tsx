@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, ReactNode } from "react";
+import { AlertTriangle } from "lucide-react";
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -9,7 +10,7 @@ interface ConfirmModalProps {
   confirmText?: string;
   cancelText?: string;
   variant?: "danger" | "primary" | "warning";
-  icon?: string;
+  icon?: ReactNode;
   loading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -22,7 +23,7 @@ export function ConfirmModal({
   confirmText = "Confirm",
   cancelText = "Cancel",
   variant = "danger",
-  icon = "⚠️",
+  icon = <AlertTriangle size={22} style={{ color: "var(--accent)" }} />,
   loading = false,
   onConfirm,
   onCancel,
@@ -59,19 +60,17 @@ export function ConfirmModal({
       style={{
         position: "fixed",
         inset: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        backgroundColor: "rgba(0, 0, 0, 0.65)",
         backdropFilter: "blur(4px)",
         WebkitBackdropFilter: "blur(4px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: 9999,
+        zIndex: 110,
         padding: "1rem",
         animation: "fadeIn 150ms ease-out",
       }}
-      onClick={() => {
-        if (!loading) onCancel();
-      }}
+      onClick={() => !loading && onCancel()}
     >
       <div
         className="card"
@@ -93,12 +92,12 @@ export function ConfirmModal({
             style={{
               width: "44px",
               height: "44px",
-              borderRadius: "50%",
+              borderRadius: "12px",
               background: `color-mix(in srgb, ${btnBg} 15%, transparent)`,
+              color: btnBg,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "1.375rem",
               flexShrink: 0,
             }}
           >
@@ -118,38 +117,24 @@ export function ConfirmModal({
             className="btn btn-ghost"
             onClick={onCancel}
             disabled={loading}
-            style={{ minWidth: "80px" }}
           >
             {cancelText}
           </button>
           <button
             type="button"
             className="btn"
-            onClick={onConfirm}
-            disabled={loading}
             style={{
               background: btnBg,
               color: btnColor,
-              minWidth: "100px",
               fontWeight: 600,
             }}
+            onClick={onConfirm}
+            disabled={loading}
           >
             {loading ? "Processing…" : confirmText}
           </button>
         </div>
       </div>
-
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes scaleUp {
-          from { opacity: 0; transform: scale(0.95); }
-          to { opacity: 1; transform: scale(1); }
-        }
-      `}</style>
     </div>
   );
 }
-

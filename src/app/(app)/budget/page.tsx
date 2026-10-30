@@ -3,6 +3,20 @@
 import { useEffect, useState, useCallback, KeyboardEvent } from "react";
 import { formatCurrency, formatDate, toISODate } from "@/lib/format";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import {
+  Plus,
+  Search,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Pencil,
+  Trash2,
+  Check,
+  X,
+  RotateCcw,
+  AlertCircle,
+  Info,
+  Loader2,
+} from "lucide-react";
 
 interface Category {
   id: string;
@@ -112,7 +126,7 @@ export default function BudgetPage() {
     return true;
   });
 
-  function showSaved(msg = "Saved ✓") {
+  function showSaved(msg = "Saved") {
     setSavedMsg(msg);
     setTimeout(() => setSavedMsg(""), 2500);
   }
@@ -142,7 +156,7 @@ export default function BudgetPage() {
           method: newRow.method,
           note: "",
         });
-        showSaved("Added to budget ✓");
+        showSaved("Added to budget");
       }
     } catch (e) {
       console.error(e);
@@ -166,7 +180,7 @@ export default function BudgetPage() {
       const json = await res.json();
       if (json.data) {
         setEntries((prev) => prev.map((e) => (e.id === id ? { ...json.data, amount: Number(json.data.amount) } : e)));
-        showSaved("Updated ✓");
+        showSaved("Updated");
       }
     } catch (e) {
       console.error(e);
@@ -183,7 +197,7 @@ export default function BudgetPage() {
     try {
       await fetch(`/api/budget/${deleteId}`, { method: "DELETE" });
       setEntries((prev) => prev.filter((e) => e.id !== deleteId));
-      showSaved("Deleted ✓");
+      showSaved("Deleted");
     } finally {
       setDeleting(false);
       setDeleteId(null);
@@ -235,7 +249,7 @@ export default function BudgetPage() {
         <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
           {savedMsg && (
             <span style={{ color: "var(--income)", fontSize: "0.875rem", fontWeight: 600, animation: "fadeIn 200ms" }}>
-              {savedMsg}
+              <><Check size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} />{savedMsg}</>
             </span>
           )}
           <select
@@ -280,7 +294,7 @@ export default function BudgetPage() {
         <input
           className="input"
           style={{ flex: "1 1 200px", maxWidth: "260px" }}
-          placeholder="🔍 Search entries…"
+          placeholder="Search entries…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -296,14 +310,14 @@ export default function BudgetPage() {
             }}
             onClick={() => setTypeFilter(t)}
           >
-            {t === "ALL" ? "All" : t === "INCOME" ? "💚 Income" : "🔴 Expense"}
+            {t === "ALL" ? "All" : t === "INCOME" ? <span style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}><ArrowUpRight size={14} /> Income</span> : <span style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}><ArrowDownLeft size={14} /> Expense</span>}
           </button>
         ))}
       </div>
 
       {/* Mobile Quick Add Form (< 768px) */}
       <div className="card mobile-budget-form" style={{ marginBottom: "1.25rem", padding: "1.25rem" }}>
-        <h3 style={{ fontSize: "1rem", marginBottom: "0.875rem" }}>➕ Add Budget Entry</h3>
+        <h3 style={{ fontSize: "1rem", marginBottom: "0.875rem" }}><Plus size={16} /> Add Budget Entry</h3>
         <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.75rem" }}>
           {(["EXPENSE", "INCOME"] as const).map((t) => (
             <button
@@ -319,7 +333,7 @@ export default function BudgetPage() {
               }}
               onClick={() => setNewRow((r) => ({ ...r, type: t, categoryId: "" }))}
             >
-              {t === "INCOME" ? "💚 Income" : "🔴 Expense"}
+              {t === "INCOME" ? <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}><ArrowDownLeft size={14} /> Income</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}><ArrowUpRight size={14} /> Expense</span>}
             </button>
           ))}
         </div>
@@ -434,16 +448,16 @@ export default function BudgetPage() {
               <tr>
                 <td colSpan={8} style={{ textAlign: "center", padding: "3rem", color: "var(--muted)" }}>
                   <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span>⏳</span> Loading your budget records…
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}><Loader2 size={16} className="animate-spin" /> Loading your budget records…</span>
                   </div>
                 </td>
               </tr>
             ) : loadError ? (
               <tr>
                 <td colSpan={8} style={{ textAlign: "center", padding: "3rem", color: "var(--expense)" }}>
-                  <p style={{ margin: "0 0 0.5rem" }}>⚠️ {loadError}</p>
+                  <p style={{ margin: "0 0 0.5rem" }}><AlertCircle size={16} style={{ display: "inline", verticalAlign: "-2px", marginRight: "4px" }} /> {loadError}</p>
                   <button className="btn btn-sm btn-ghost" onClick={load}>
-                    🔄 Retry
+                    <RotateCcw size={14} /> Retry
                   </button>
                 </td>
               </tr>
@@ -600,18 +614,14 @@ export default function BudgetPage() {
                             style={{ background: "var(--primary)", color: "#fff", padding: "0.25rem 0.5rem" }}
                             onClick={() => saveEdit(e.id)}
                             title="Save"
-                          >
-                            ✓
-                          </button>
+                          ><Check size={14} /></button>
                           <button
                             type="button"
                             className="btn btn-ghost btn-sm"
                             style={{ padding: "0.25rem 0.5rem" }}
                             onClick={cancelEdit}
                             title="Cancel"
-                          >
-                            ✕
-                          </button>
+                          ><X size={14} /></button>
                         </div>
                       ) : (
                         <div style={{ display: "inline-flex", gap: "0.25rem" }}>
@@ -621,18 +631,14 @@ export default function BudgetPage() {
                             style={{ padding: "0.25rem 0.5rem" }}
                             onClick={() => startEdit(e)}
                             title="Edit entry"
-                          >
-                            ✏️
-                          </button>
+                          ><Pencil size={14} /></button>
                           <button
                             type="button"
                             className="btn btn-ghost btn-sm"
                             style={{ padding: "0.25rem 0.5rem", color: "var(--expense)" }}
                             onClick={() => setDeleteId(e.id)}
                             title="Delete entry"
-                          >
-                            🗑️
-                          </button>
+                          ><Trash2 size={14} /></button>
                         </div>
                       )}
                     </td>
@@ -772,7 +778,7 @@ export default function BudgetPage() {
       </div>
 
       <p style={{ color: "var(--muted)", fontSize: "0.8rem", margin: 0 }}>
-        💡 Double-click any row to edit · Press Enter to save · Esc to cancel · Type in the bottom row and hit Enter to quickly add
+        <Info size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Double-click any row to edit · Press Enter to save · Esc to cancel · Type in the bottom row and hit Enter to quickly add
       </p>
 
       {/* Delete Confirmation Modal */}
@@ -782,7 +788,7 @@ export default function BudgetPage() {
         message="Are you sure you want to delete this budget entry? This action cannot be undone."
         confirmText="Delete Entry"
         variant="danger"
-        icon="🗑️"
+        icon={<Trash2 size={22} style={{ color: "var(--expense)" }} />}
         loading={deleting}
         onConfirm={confirmDelete}
         onCancel={() => setDeleteId(null)}

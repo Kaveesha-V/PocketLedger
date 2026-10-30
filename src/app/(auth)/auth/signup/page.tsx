@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { Check, AlertCircle, Mail, Wrench } from "lucide-react";
 
 const CURRENCIES = [
   { code: "LKR", label: "LKR — Sri Lankan Rupee" },
@@ -49,7 +50,7 @@ function PasswordStrength({ password }: { password: string }) {
               color: c.pass ? "var(--income)" : "var(--muted)",
             }}
           >
-            {c.pass ? "✓" : "·"} {c.label}
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>{c.pass ? <Check size={12} /> : "•"} {c.label}</span>
           </span>
         ))}
       </div>
@@ -186,7 +187,7 @@ function StepForm({
             color: "var(--expense)",
           }}
         >
-          ⚠️ {error}
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}><AlertCircle size={15} /> {error}</span>
         </div>
       )}
 
@@ -333,7 +334,11 @@ function StepOtp({
   return (
     <>
       <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-        <div style={{ fontSize: "3rem", marginBottom: "0.75rem" }}>📧</div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
+          <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "rgba(139, 92, 246, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--primary)" }}>
+            <Mail size={32} />
+          </div>
+        </div>
         <h1 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Check your email</h1>
         <p style={{ color: "var(--muted)", fontSize: "0.9rem" }}>
           We sent a 6-digit verification code to
@@ -353,7 +358,7 @@ function StepOtp({
           color: "var(--primary)",
           textAlign: "center",
         }}>
-          🛠 Dev mode — OTP: <strong style={{ letterSpacing: "0.2em" }}>{devOtp}</strong>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}><Wrench size={14} /> Dev mode — OTP: <strong style={{ letterSpacing: "0.2em", marginLeft: "4px" }}>{devOtp}</strong></span>
         </div>
       )}
 
@@ -366,7 +371,7 @@ function StepOtp({
           background: "color-mix(in srgb, var(--expense) 12%, transparent)",
           color: "var(--expense)",
         }}>
-          ⚠️ {error}
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}><AlertCircle size={15} /> {error}</span>
         </div>
       )}
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Sun, Moon } from "lucide-react";
 
 export function ThemeToggle({ className = "", style = {} }: { className?: string; style?: React.CSSProperties }) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -34,10 +35,10 @@ export function ThemeToggle({ className = "", style = {} }: { className?: string
       <button
         type="button"
         className={`btn btn-ghost btn-sm ${className}`}
-        style={{ width: "36px", height: "36px", padding: 0, borderRadius: "50%", ...style }}
+        style={{ width: "36px", height: "36px", padding: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", ...style }}
         aria-label="Toggle theme"
       >
-        <span>☀️</span>
+        <Sun size={18} />
       </button>
     );
   }
@@ -55,15 +56,13 @@ export function ThemeToggle({ className = "", style = {} }: { className?: string
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontSize: "1.1rem",
         transition: "transform 200ms ease, background 200ms ease",
         ...style,
       }}
       title={`Switch to ${theme === "light" ? "Dark" : "Light"} mode`}
       aria-label={`Switch to ${theme === "light" ? "Dark" : "Light"} mode`}
     >
-      {theme === "light" ? "🌙" : "☀️"}
+      {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
     </button>
   );
 }
-

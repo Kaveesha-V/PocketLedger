@@ -3,6 +3,19 @@
 import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { DEFAULT_TEMPLATES, ReminderTemplates } from "@/lib/messages";
+import {
+  User,
+  Sun,
+  Moon,
+  MessageSquare,
+  Lock,
+  Package,
+  Download,
+  AlertTriangle,
+  Check,
+  AlertCircle,
+  ShieldAlert,
+} from "lucide-react";
 
 interface UserProfile {
   name: string;
@@ -216,10 +229,10 @@ export default function SettingsPage() {
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setExportNotice("Export downloaded successfully ✓");
+      setExportNotice("Export downloaded successfully");
       setTimeout(() => setExportNotice(""), 3000);
     } catch {
-      setExportNotice("⚠️ Failed to export user data. Please try again.");
+      setExportNotice("Failed to export user data. Please try again.");
     }
   }
 
@@ -268,15 +281,18 @@ export default function SettingsPage() {
         <div
           style={{
             padding: "0.875rem 1.25rem",
-            background: "rgba(22, 163, 74, 0.12)",
+            background: "rgba(34, 197, 94, 0.12)",
             color: "var(--income)",
             borderRadius: "var(--radius-sm)",
             marginBottom: "1.25rem",
             fontWeight: 500,
-            border: "1px solid rgba(22, 163, 74, 0.3)",
+            border: "1px solid rgba(34, 197, 94, 0.3)",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
           }}
         >
-          ✓ {successMsg}
+          <Check size={18} /> {successMsg}
         </div>
       )}
 
@@ -284,21 +300,26 @@ export default function SettingsPage() {
         <div
           style={{
             padding: "0.875rem 1.25rem",
-            background: "rgba(229, 72, 77, 0.12)",
+            background: "rgba(239, 68, 68, 0.12)",
             color: "var(--expense)",
             borderRadius: "var(--radius-sm)",
             marginBottom: "1.25rem",
             fontWeight: 500,
-            border: "1px solid rgba(229, 72, 77, 0.3)",
+            border: "1px solid rgba(239, 68, 68, 0.3)",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
           }}
         >
-          ⚠ {errorMsg}
+          <AlertCircle size={18} /> {errorMsg}
         </div>
       )}
 
       {/* ── 1. Profile & Preferences ─────────────────────────────────── */}
       <div className="card" style={{ marginBottom: "1.5rem" }}>
-        <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>👤 Profile & Preferences</h2>
+        <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <User size={20} color="var(--primary)" /> Profile & Preferences
+        </h2>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1rem" }}>
           <div>
@@ -355,16 +376,18 @@ export default function SettingsPage() {
             <button
               type="button"
               className={`btn btn-sm ${profile.theme === "light" ? "btn-primary" : "btn-ghost"}`}
+              style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}
               onClick={() => handleThemeChange("light")}
             >
-              ☀️ Emerald Light
+              <Sun size={15} /> Light
             </button>
             <button
               type="button"
               className={`btn btn-sm ${profile.theme === "dark" ? "btn-primary" : "btn-ghost"}`}
+              style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}
               onClick={() => handleThemeChange("dark")}
             >
-              🌙 Emerald Night (Dark)
+              <Moon size={15} /> Dark
             </button>
           </div>
         </div>
@@ -384,7 +407,9 @@ export default function SettingsPage() {
       {/* ── 2. Reminder Message Templates ───────────────────────────── */}
       <div className="card" style={{ marginBottom: "1.5rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-          <h2 style={{ fontSize: "1.25rem", margin: 0 }}>💬 Reminder Templates</h2>
+          <h2 style={{ fontSize: "1.25rem", margin: 0, display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <MessageSquare size={20} color="var(--primary)" /> Reminder Templates
+          </h2>
           <button
             type="button"
             className="btn btn-ghost btn-sm"
@@ -467,20 +492,25 @@ export default function SettingsPage() {
 
       {/* ── 3. Change Password ───────────────────────────────────────── */}
       <div className="card" style={{ marginBottom: "1.5rem" }}>
-        <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>🔒 Security & Password</h2>
+        <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <Lock size={20} color="var(--primary)" /> Security & Password
+        </h2>
 
         {passwordMsg && (
           <div
             style={{
               padding: "0.75rem 1rem",
-              background: "rgba(22, 163, 74, 0.12)",
+              background: "rgba(34, 197, 94, 0.12)",
               color: "var(--income)",
               borderRadius: "var(--radius-sm)",
               marginBottom: "1rem",
               fontWeight: 500,
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
             }}
           >
-            ✓ {passwordMsg}
+            <Check size={16} /> {passwordMsg}
           </div>
         )}
 
@@ -488,14 +518,17 @@ export default function SettingsPage() {
           <div
             style={{
               padding: "0.75rem 1rem",
-              background: "rgba(229, 72, 77, 0.12)",
+              background: "rgba(239, 68, 68, 0.12)",
               color: "var(--expense)",
               borderRadius: "var(--radius-sm)",
               marginBottom: "1rem",
               fontWeight: 500,
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
             }}
           >
-            ⚠ {passwordErr}
+            <AlertCircle size={16} /> {passwordErr}
           </div>
         )}
 
@@ -544,16 +577,33 @@ export default function SettingsPage() {
 
       {/* ── 4. Data Export & Privacy ─────────────────────────────────── */}
       <div className="card" style={{ marginBottom: "1.5rem" }}>
-        <h2 style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>📦 Your Data & Privacy</h2>
+        <h2 style={{ fontSize: "1.25rem", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <Package size={20} color="var(--primary)" /> Your Data & Privacy
+        </h2>
         <p style={{ color: "var(--muted)", fontSize: "0.875rem", marginBottom: "1rem" }}>
           Download a complete copy of all your PocketLedger data including your budget entries, categories, friends, transactions, and reminders in structured JSON format.
         </p>
 
-        <button type="button" className="btn btn-ghost" onClick={exportData}>
-          📥 Export All My Data (JSON)
+        <button
+          type="button"
+          className="btn btn-ghost"
+          style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}
+          onClick={exportData}
+        >
+          <Download size={16} /> Export All My Data (JSON)
         </button>
         {exportNotice && (
-          <p style={{ fontSize: "0.85rem", marginTop: "0.5rem", color: exportNotice.startsWith("⚠️") ? "var(--expense)" : "var(--income)" }}>
+          <p
+            style={{
+              fontSize: "0.85rem",
+              marginTop: "0.5rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              color: exportNotice.includes("Failed") ? "var(--expense)" : "var(--income)",
+            }}
+          >
+            {exportNotice.includes("Failed") ? <AlertCircle size={14} /> : <Check size={14} />}
             {exportNotice}
           </p>
         )}
@@ -563,12 +613,12 @@ export default function SettingsPage() {
       <div
         className="card"
         style={{
-          border: "1px solid rgba(229, 72, 77, 0.4)",
-          background: "rgba(229, 72, 77, 0.03)",
+          border: "1px solid rgba(239, 68, 68, 0.4)",
+          background: "rgba(239, 68, 68, 0.04)",
         }}
       >
-        <h2 style={{ fontSize: "1.25rem", color: "var(--expense)", marginBottom: "0.5rem" }}>
-          ⚠️ Danger Zone
+        <h2 style={{ fontSize: "1.25rem", color: "var(--expense)", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <ShieldAlert size={20} /> Danger Zone
         </h2>
         <p style={{ color: "var(--muted)", fontSize: "0.875rem", marginBottom: "1rem" }}>
           Permanently delete your PocketLedger account and all associated data. This action is irreversible.
@@ -603,8 +653,8 @@ export default function SettingsPage() {
               Please type <strong style={{ color: "var(--text)" }}>DELETE</strong> below to confirm.
             </p>
             {deleteError && (
-              <p style={{ fontSize: "0.85rem", color: "var(--expense)", marginBottom: "0.75rem" }}>
-                ⚠️ {deleteError}
+              <p style={{ fontSize: "0.85rem", color: "var(--expense)", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                <AlertCircle size={14} /> {deleteError}
               </p>
             )}
             <input
