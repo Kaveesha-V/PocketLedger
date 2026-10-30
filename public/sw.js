@@ -1,5 +1,5 @@
 // PocketLedger Lightweight Service Worker
-// Enables standalone PWA installability and basic asset caching
+// Enables standalone PWA installability, basic asset caching, and clean session purges
 
 const CACHE_NAME = "pocketledger-v1";
 
@@ -38,6 +38,15 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// Message: clear all caches on user logout
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "CLEAR_USER_CACHE") {
+    caches.keys().then((names) => {
+      return Promise.all(names.map((name) => caches.delete(name)));
+    });
+  }
+});
+
 // Fetch: network-first strategy with cache fallback
 self.addEventListener("fetch", (event) => {
   const { request } = event;
@@ -47,9 +56,9 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Bypass cache for dynamic API routes & NextAuth endpoints
+  // Bypass cache for dynamic API routes, NextAuth endpoints, and auth screens
   const url = new URL(request.url);
-  if (url.pathname.startsWith("/api/")) {
+  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/auth/")) {
     return;
   }
 
@@ -96,4 +105,3 @@ self.addEventListener("fetch", (event) => {
       })
   );
 });
-

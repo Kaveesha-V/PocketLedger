@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { handleAppSignOut } from "@/lib/logout";
 import { initials, stringToHue } from "@/lib/format";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { QuickActionFab } from "@/components/ui/QuickActionFab";
@@ -55,6 +56,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const name = session?.user?.name ?? "User";
   const email = session?.user?.email ?? "";
   const hue = stringToHue(name);
+
+  // Account-switch safety: wipe stale caches if a different user logs in
+  useEffect(() => {
+    if (session?.user?.id) {
+      try {
+        const lastUserId = localStorage.getItem("pl_active_user_id");
+        if (lastUserId && lastUserId !== session.user.id) {
+          const theme = localStorage.getItem("pl_theme");
+          localStorage.clear();
+          sessionStorage.clear();
+          if (theme) localStorage.setItem("pl_theme", theme);
+        }
+        localStorage.setItem("pl_active_user_id", session.user.id);
+      } catch {}
+    }
+  }, [session?.user?.id]);
 
   // Close drawer automatically on navigation route changes
   useEffect(() => {
@@ -358,7 +375,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               id="btn-signout"
               className="btn btn-ghost btn-sm"
               style={{ width: "100%", justifyContent: "center", gap: "0.5rem" }}
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => handleAppSignOut("/auth/login")}
             >
               <LogOut size={15} />
               Sign out
@@ -645,7 +662,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             type="button"
             className="btn btn-ghost btn-sm"
             style={{ width: "100%", justifyContent: "center", gap: "0.5rem", color: "var(--expense)" }}
-            onClick={() => signOut({ callbackUrl: "/" })}
+            onClick={() => handleAppSignOut("/auth/login")}
           >
             <LogOut size={16} />
             Sign out
