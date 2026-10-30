@@ -89,7 +89,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header
         className="app-top-header"
         style={{
-          height: "60px",
+          minHeight: "calc(58px + env(safe-area-inset-top, 0px))",
           position: "sticky",
           top: 0,
           zIndex: 40,
@@ -98,7 +98,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 1.25rem",
+          padding: "env(safe-area-inset-top, 0px) 1rem 0",
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
         }}
       >
@@ -658,10 +658,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         className="mobile-floating-dock-nav"
         style={{
           position: "fixed",
-          bottom: "calc(0.875rem + env(safe-area-inset-bottom, 0px))",
-          left: "0.875rem",
-          right: "0.875rem",
-          maxWidth: "460px",
+          bottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))",
+          left: "0.75rem",
+          right: "0.75rem",
+          maxWidth: "440px",
           margin: "0 auto",
           background: "color-mix(in srgb, var(--surface) 92%, var(--bg))",
           backdropFilter: "blur(18px)",
@@ -720,7 +720,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         }
         @media (max-width: 1023px) {
           .desktop-sidebar { display: none !important; }
-          .app-main { padding-bottom: 6.5rem !important; }
+          .app-main { padding-bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px)) !important; }
           .desktop-only-name { display: none !important; }
         }
       `}</style>

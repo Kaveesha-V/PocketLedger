@@ -168,20 +168,26 @@ export default function DashboardPage() {
           alignItems: "center",
           justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: "1rem",
-          marginBottom: "1.5rem",
+          gap: "0.75rem",
+          marginBottom: "1.25rem",
         }}
       >
-        <div>
-          <h1 style={{ fontSize: "1.625rem", marginBottom: "0.25rem" }}>
+        <div style={{ minWidth: 0 }}>
+          <h1
+            style={{
+              fontSize: "clamp(1.25rem, 5vw, 1.625rem)",
+              marginBottom: "0.2rem",
+              lineHeight: 1.25,
+            }}
+          >
             {greeting}, {name}
           </h1>
-          <p style={{ color: "var(--muted)", fontSize: "0.875rem", margin: 0 }}>
-            {now.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" })}
+          <p style={{ color: "var(--muted)", fontSize: "0.8125rem", margin: 0 }}>
+            {now.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" })}
           </p>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
           <MonthSelector value={month} onChange={setMonth} />
           <ThemeToggle />
         </div>
@@ -191,205 +197,289 @@ export default function DashboardPage() {
       <div className="dashboard-actions-grid">
         <Link
           href="/ledger/new?direction=I_GAVE"
-          className="card card-interactive"
+          className="card card-interactive dashboard-action-item"
           style={{
-            textDecoration: "none",
-            color: "inherit",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.75rem",
-            padding: "0.875rem 1rem",
             border: "1px solid color-mix(in srgb, var(--income) 30%, transparent)",
             background: "color-mix(in srgb, var(--income) 8%, var(--surface))",
-            borderRadius: "var(--radius)",
           }}
         >
-          <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: "color-mix(in srgb, var(--income) 15%, transparent)", color: "var(--income)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><ArrowUpRight size={20} /></div>
-          <div>
-            <p style={{ fontWeight: 600, fontSize: "0.9rem", margin: 0 }}>Lend Money</p>
-            <p style={{ fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>I gave to friend</p>
+          <div
+            className="dashboard-action-icon"
+            style={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "10px",
+              background: "color-mix(in srgb, var(--income) 15%, transparent)",
+              color: "var(--income)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <ArrowUpRight size={18} />
+          </div>
+          <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+            <p className="dashboard-action-title" style={{ fontWeight: 600, fontSize: "0.875rem", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              Lend Money
+            </p>
+            <p className="dashboard-action-subtitle" style={{ fontSize: "0.72rem", color: "var(--muted)", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              I gave to friend
+            </p>
           </div>
         </Link>
 
         <Link
           href="/ledger/new?direction=I_BORROWED"
-          className="card card-interactive"
+          className="card card-interactive dashboard-action-item"
           style={{
-            textDecoration: "none",
-            color: "inherit",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.75rem",
-            padding: "0.875rem 1rem",
             border: "1px solid color-mix(in srgb, var(--expense) 30%, transparent)",
             background: "color-mix(in srgb, var(--expense) 8%, var(--surface))",
-            borderRadius: "var(--radius)",
           }}
         >
-          <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: "color-mix(in srgb, var(--expense) 15%, transparent)", color: "var(--expense)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><ArrowDownLeft size={20} /></div>
-          <div>
-            <p style={{ fontWeight: 600, fontSize: "0.9rem", margin: 0 }}>Borrow Money</p>
-            <p style={{ fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>I borrowed</p>
+          <div
+            className="dashboard-action-icon"
+            style={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "10px",
+              background: "color-mix(in srgb, var(--expense) 15%, transparent)",
+              color: "var(--expense)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <ArrowDownLeft size={18} />
+          </div>
+          <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+            <p className="dashboard-action-title" style={{ fontWeight: 600, fontSize: "0.875rem", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              Borrow Money
+            </p>
+            <p className="dashboard-action-subtitle" style={{ fontSize: "0.72rem", color: "var(--muted)", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              I borrowed
+            </p>
           </div>
         </Link>
 
         <Link
           href="/budget"
-          className="card card-interactive"
+          className="card card-interactive dashboard-action-item"
           style={{
-            textDecoration: "none",
-            color: "inherit",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.75rem",
-            padding: "0.875rem 1rem",
             border: "1px solid var(--border)",
             background: "var(--surface)",
-            borderRadius: "var(--radius)",
           }}
         >
-          <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: "color-mix(in srgb, var(--primary) 15%, transparent)", color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Plus size={20} /></div>
-          <div>
-            <p style={{ fontWeight: 600, fontSize: "0.9rem", margin: 0 }}>Add Expense</p>
-            <p style={{ fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>Daily budget log</p>
+          <div
+            className="dashboard-action-icon"
+            style={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "10px",
+              background: "color-mix(in srgb, var(--primary) 15%, transparent)",
+              color: "var(--primary)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <Plus size={18} />
+          </div>
+          <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+            <p className="dashboard-action-title" style={{ fontWeight: 600, fontSize: "0.875rem", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              Add Expense
+            </p>
+            <p className="dashboard-action-subtitle" style={{ fontSize: "0.72rem", color: "var(--muted)", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              Daily budget log
+            </p>
           </div>
         </Link>
 
         <Link
           href="/friends"
-          className="card card-interactive"
+          className="card card-interactive dashboard-action-item"
           style={{
-            textDecoration: "none",
-            color: "inherit",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.75rem",
-            padding: "0.875rem 1rem",
             border: "1px solid var(--border)",
             background: "var(--surface)",
-            borderRadius: "var(--radius)",
           }}
         >
-          <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: "color-mix(in srgb, var(--accent) 15%, transparent)", color: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Users size={20} /></div>
-          <div>
-            <p style={{ fontWeight: 600, fontSize: "0.9rem", margin: 0 }}>Friends</p>
-            <p style={{ fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>View all friends</p>
+          <div
+            className="dashboard-action-icon"
+            style={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "10px",
+              background: "color-mix(in srgb, var(--accent) 15%, transparent)",
+              color: "var(--accent)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <Users size={18} />
+          </div>
+          <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+            <p className="dashboard-action-title" style={{ fontWeight: 600, fontSize: "0.875rem", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              Friends
+            </p>
+            <p className="dashboard-action-subtitle" style={{ fontSize: "0.72rem", color: "var(--muted)", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              View all friends
+            </p>
           </div>
         </Link>
       </div>
 
       {/* ── Key Metrics Cards ─────────────────────────────────────── */}
       <div className="dashboard-metrics-grid">
-        <div className="card" style={{ padding: "1.25rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <p style={{ color: "var(--muted)", fontSize: "0.8rem", margin: "0 0 0.375rem" }}>Net Balance</p>
+        <div className="card dashboard-metric-card">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.375rem" }}>
+            <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+              <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: "0 0 0.25rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                Net Balance
+              </p>
               <p
-                className="money"
+                className="money dashboard-metric-value"
                 style={{
-                  fontSize: "1.5rem",
-                  fontWeight: 700,
                   color: (data?.budget.balance ?? 0) >= 0 ? "var(--income)" : "var(--expense)",
-                  margin: 0,
                 }}
               >
                 {fmt(data?.budget.balance ?? 0)}
               </p>
             </div>
-            <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "color-mix(in srgb, var(--primary) 15%, transparent)", color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Wallet size={20} /></div>
+            <div
+              className="dashboard-metric-icon"
+              style={{
+                background: "color-mix(in srgb, var(--primary) 15%, transparent)",
+                color: "var(--primary)",
+              }}
+            >
+              <Wallet size={18} />
+            </div>
           </div>
         </div>
 
-        <div className="card" style={{ padding: "1.25rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <p style={{ color: "var(--muted)", fontSize: "0.8rem", margin: "0 0 0.375rem" }}>Total Income</p>
-              <p className="money" style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--income)", margin: 0 }}>
+        <div className="card dashboard-metric-card">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.375rem" }}>
+            <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+              <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: "0 0 0.25rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                Total Income
+              </p>
+              <p className="money dashboard-metric-value" style={{ color: "var(--income)" }}>
                 +{fmt(data?.budget.totalIncome ?? 0)}
               </p>
             </div>
-            <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "color-mix(in srgb, var(--income) 15%, transparent)", color: "var(--income)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><TrendingUp size={20} /></div>
+            <div
+              className="dashboard-metric-icon"
+              style={{
+                background: "color-mix(in srgb, var(--income) 15%, transparent)",
+                color: "var(--income)",
+              }}
+            >
+              <TrendingUp size={18} />
+            </div>
           </div>
         </div>
 
-        <div className="card" style={{ padding: "1.25rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <p style={{ color: "var(--muted)", fontSize: "0.8rem", margin: "0 0 0.375rem" }}>Total Expense</p>
-              <p className="money" style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--expense)", margin: 0 }}>
+        <div className="card dashboard-metric-card">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.375rem" }}>
+            <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+              <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: "0 0 0.25rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                Total Expense
+              </p>
+              <p className="money dashboard-metric-value" style={{ color: "var(--expense)" }}>
                 -{fmt(data?.budget.totalExpense ?? 0)}
               </p>
             </div>
-            <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "color-mix(in srgb, var(--expense) 15%, transparent)", color: "var(--expense)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><TrendingDown size={20} /></div>
+            <div
+              className="dashboard-metric-icon"
+              style={{
+                background: "color-mix(in srgb, var(--expense) 15%, transparent)",
+                color: "var(--expense)",
+              }}
+            >
+              <TrendingDown size={18} />
+            </div>
           </div>
         </div>
 
-        <div className="card" style={{ padding: "1.25rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <p style={{ color: "var(--muted)", fontSize: "0.8rem", margin: "0 0 0.375rem" }}>Net Friend Ledger</p>
+        <div className="card dashboard-metric-card">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.375rem" }}>
+            <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+              <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: "0 0 0.25rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                Net Friend Ledger
+              </p>
               <p
-                className="money"
+                className="money dashboard-metric-value"
                 style={{
-                  fontSize: "1.5rem",
-                  fontWeight: 700,
                   color: netFriendBalance >= 0 ? "var(--income)" : "var(--expense)",
-                  margin: 0,
                 }}
               >
                 {fmt(netFriendBalance)}
               </p>
             </div>
-            <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "color-mix(in srgb, var(--accent) 15%, transparent)", color: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Coins size={20} /></div>
+            <div
+              className="dashboard-metric-icon"
+              style={{
+                background: "color-mix(in srgb, var(--accent) 15%, transparent)",
+                color: "var(--accent)",
+              }}
+            >
+              <Coins size={18} />
+            </div>
           </div>
         </div>
       </div>
 
       {/* ── Friends Lend / Borrow Summary Strips ─────────────────── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+      <div className="dashboard-summary-strips-grid">
         <div
-          className="card"
+          className="card dashboard-summary-strip"
           style={{
-            padding: "1.25rem",
             borderLeft: "5px solid var(--income)",
             background: "color-mix(in srgb, var(--income) 5%, var(--surface))",
           }}
         >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <p style={{ color: "var(--income)", fontWeight: 600, fontSize: "0.875rem", margin: 0, display: "flex", alignItems: "center", gap: "0.4rem" }}><ArrowUpRight size={16} /> Friends Owe You</p>
-              <p className="money" style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--income)", margin: "0.25rem 0" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.5rem" }}>
+            <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+              <p style={{ color: "var(--income)", fontWeight: 600, fontSize: "0.85rem", margin: 0, display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                <ArrowUpRight size={16} /> Friends Owe You
+              </p>
+              <p className="money" style={{ fontSize: "clamp(1.2rem, 4.5vw, 1.75rem)", fontWeight: 700, color: "var(--income)", margin: "0.25rem 0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {fmt(data?.friends.totalOwedToMe ?? 0)}
               </p>
-              <p style={{ color: "var(--muted)", fontSize: "0.8rem", margin: 0 }}>
+              <p style={{ color: "var(--muted)", fontSize: "0.78rem", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {data?.friends.friendsOwingMe ?? 0} friend{data?.friends.friendsOwingMe !== 1 ? "s" : ""} pending
               </p>
             </div>
-            <Link href="/friends" className="btn btn-sm btn-ghost" style={{ background: "var(--surface)" }}>
+            <Link href="/friends" className="btn btn-sm btn-ghost" style={{ background: "var(--surface)", flexShrink: 0 }}>
               View →
             </Link>
           </div>
         </div>
 
         <div
-          className="card"
+          className="card dashboard-summary-strip"
           style={{
-            padding: "1.25rem",
             borderLeft: "5px solid var(--expense)",
             background: "color-mix(in srgb, var(--expense) 5%, var(--surface))",
           }}
         >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <p style={{ color: "var(--expense)", fontWeight: 600, fontSize: "0.875rem", margin: 0, display: "flex", alignItems: "center", gap: "0.4rem" }}><ArrowDownLeft size={16} /> You Owe Friends</p>
-              <p className="money" style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--expense)", margin: "0.25rem 0" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.5rem" }}>
+            <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+              <p style={{ color: "var(--expense)", fontWeight: 600, fontSize: "0.85rem", margin: 0, display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                <ArrowDownLeft size={16} /> You Owe Friends
+              </p>
+              <p className="money" style={{ fontSize: "clamp(1.2rem, 4.5vw, 1.75rem)", fontWeight: 700, color: "var(--expense)", margin: "0.25rem 0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {fmt(data?.friends.totalIOwe ?? 0)}
               </p>
-              <p style={{ color: "var(--muted)", fontSize: "0.8rem", margin: 0 }}>
+              <p style={{ color: "var(--muted)", fontSize: "0.78rem", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {data?.friends.friendsIowe ?? 0} friend{data?.friends.friendsIowe !== 1 ? "s" : ""} pending
               </p>
             </div>
-            <Link href="/friends" className="btn btn-sm btn-ghost" style={{ background: "var(--surface)" }}>
+            <Link href="/friends" className="btn btn-sm btn-ghost" style={{ background: "var(--surface)", flexShrink: 0 }}>
               View →
             </Link>
           </div>
@@ -397,7 +487,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Two-Column Main Content ─────────────────────────────────── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem", marginBottom: "1.5rem" }}>
+      <div className="dashboard-main-grid">
         {/* Left Column: Pending Friend Balances */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           {/* Overdue Alerts if any */}
@@ -546,20 +636,21 @@ export default function DashboardPage() {
                         justifyContent: "space-between",
                         padding: "0.5rem 0",
                         borderBottom: "1px solid var(--border)",
+                        gap: "0.5rem",
                       }}
                     >
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
-                        <Coins size={16} style={{ color: "var(--accent)" }} />
-                        <div>
-                          <p style={{ fontWeight: 500, fontSize: "0.875rem", margin: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", minWidth: 0, flex: 1, overflow: "hidden" }}>
+                        <Coins size={16} style={{ color: "var(--accent)", flexShrink: 0 }} />
+                        <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+                          <p style={{ fontWeight: 500, fontSize: "0.85rem", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {meta.label} ({l.friendName})
                           </p>
-                          <p style={{ fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>
+                          <p style={{ fontSize: "0.72rem", color: "var(--muted)", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {formatDate(l.date, "short")} {l.reason ? `· ${l.reason}` : ""}
                           </p>
                         </div>
                       </div>
-                      <span className="money" style={{ fontWeight: 600, color: meta.color, fontSize: "0.875rem" }}>
+                      <span className="money" style={{ fontWeight: 600, color: meta.color, fontSize: "0.85rem", flexShrink: 0, marginLeft: "0.5rem" }}>
                         {meta.sign}{fmt(l.amount)}
                       </span>
                     </div>
@@ -576,13 +667,14 @@ export default function DashboardPage() {
                       justifyContent: "space-between",
                       padding: "0.5rem 0",
                       borderBottom: "1px solid var(--border)",
+                      gap: "0.5rem",
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
-                      {b.entryType === "INCOME" ? <TrendingUp size={16} style={{ color: "var(--income)" }} /> : <TrendingDown size={16} style={{ color: "var(--expense)" }} />}
-                      <div>
-                        <p style={{ fontWeight: 500, fontSize: "0.875rem", margin: 0 }}>{b.title}</p>
-                        <p style={{ fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", minWidth: 0, flex: 1, overflow: "hidden" }}>
+                      {b.entryType === "INCOME" ? <TrendingUp size={16} style={{ color: "var(--income)", flexShrink: 0 }} /> : <TrendingDown size={16} style={{ color: "var(--expense)", flexShrink: 0 }} />}
+                      <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+                        <p style={{ fontWeight: 500, fontSize: "0.85rem", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{b.title}</p>
+                        <p style={{ fontSize: "0.72rem", color: "var(--muted)", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                           {formatDate(b.date, "short")} {b.category ? `· ${b.category}` : ""}
                         </p>
                       </div>
@@ -592,7 +684,9 @@ export default function DashboardPage() {
                       style={{
                         fontWeight: 600,
                         color: b.entryType === "INCOME" ? "var(--income)" : "var(--expense)",
-                        fontSize: "0.875rem",
+                        fontSize: "0.85rem",
+                        flexShrink: 0,
+                        marginLeft: "0.5rem",
                       }}
                     >
                       {b.entryType === "INCOME" ? "+" : "-"}{fmt(b.amount)}
@@ -604,31 +698,33 @@ export default function DashboardPage() {
           </div>
 
           {/* Expense Breakdown / Category Chart */}
-          <div className="card" style={{ padding: "1.25rem" }}>
+          <div className="card" style={{ minWidth: 0, overflow: "hidden" }}>
             <h3 style={{ fontSize: "1rem", margin: "0 0 1rem" }}>Expense by Category</h3>
             {(data?.categoryBreakdown?.length ?? 0) > 0 ? (
-              <>
-                <ResponsiveContainer width="100%" height={180}>
-                  <PieChart>
-                    <Pie
-                      data={data?.categoryBreakdown}
-                      dataKey="amount"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={45}
-                      outerRadius={75}
-                      paddingAngle={3}
-                    >
-                      {data?.categoryBreakdown.map((entry, i) => (
-                        <Cell key={i} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} />
-                  </PieChart>
-                </ResponsiveContainer>
+              <div style={{ width: "100%", minWidth: 0, overflow: "hidden" }}>
+                <div style={{ width: "100%", height: 180, minWidth: 0 }}>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <PieChart>
+                      <Pie
+                        data={data?.categoryBreakdown}
+                        dataKey="amount"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={45}
+                        outerRadius={75}
+                        paddingAngle={3}
+                      >
+                        {data?.categoryBreakdown.map((entry, i) => (
+                          <Cell key={i} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
 
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.75rem" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem", marginTop: "0.75rem" }}>
                   {data?.categoryBreakdown.slice(0, 6).map((c) => (
                     <div
                       key={c.name}
@@ -649,7 +745,7 @@ export default function DashboardPage() {
                     </div>
                   ))}
                 </div>
-              </>
+              </div>
             ) : (
               <div style={{ textAlign: "center", padding: "1.5rem 1rem", color: "var(--muted)" }}>
                 <p style={{ margin: "0 0 0.5rem", fontSize: "0.875rem" }}>No category expenses logged for this month.</p>

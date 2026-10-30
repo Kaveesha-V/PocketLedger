@@ -131,20 +131,6 @@ function LoginForm() {
           {loading ? "Signing in…" : "Sign in →"}
         </button>
       </form>
-
-      <div
-        style={{
-          marginTop: "1.25rem",
-          padding: "0.875rem",
-          background: "var(--surface-2)",
-          borderRadius: "var(--radius-sm)",
-          fontSize: "0.8rem",
-          color: "var(--muted)",
-          textAlign: "center",
-        }}
-      >
-        <strong>Demo account:</strong> demo@pocketledger.app / Demo@1234
-      </div>
     </>
   );
 }
