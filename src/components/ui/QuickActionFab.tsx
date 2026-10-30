@@ -47,8 +47,8 @@ export function QuickActionFab() {
       sub: "View friends and settled accounts",
       href: "/friends",
       icon: "👥",
-      color: "#3b82f6",
-      bg: "color-mix(in srgb, #3b82f6 15%, var(--surface))",
+      color: "var(--accent)",
+      bg: "color-mix(in srgb, var(--accent) 15%, var(--surface))",
     },
   ];
 
@@ -60,9 +60,9 @@ export function QuickActionFab() {
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            backdropFilter: "blur(3px)",
-            WebkitBackdropFilter: "blur(3px)",
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(4px)",
+            WebkitBackdropFilter: "blur(4px)",
             zIndex: 90,
             animation: "fadeIn 150ms ease-out",
           }}
@@ -146,9 +146,10 @@ export function QuickActionFab() {
         style={{
           zIndex: 96,
           transform: open ? "rotate(45deg)" : "none",
-          transition: "transform 220ms cubic-bezier(0.16, 1, 0.3, 1), background-color var(--transition), box-shadow var(--transition)",
-          backgroundColor: open ? "var(--expense)" : "var(--accent)",
-          color: open ? "#fff" : "#10231d",
+          transition: "transform 220ms cubic-bezier(0.16, 1, 0.3, 1), background var(--transition), box-shadow var(--transition)",
+          background: open ? "var(--expense)" : "linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)",
+          color: "#fff",
+          boxShadow: open ? "0 4px 14px rgba(244, 63, 94, 0.4)" : "0 8px 24px color-mix(in srgb, var(--primary) 45%, transparent)",
         }}
       >
         <span

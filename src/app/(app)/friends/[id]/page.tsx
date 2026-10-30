@@ -884,13 +884,14 @@ export default function FriendDetailPage() {
   return (
     <div className="page-container">
       {/* Top Bar with Back + Edit Friend + Remove Friend */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1rem" }}>
-        <button className="btn btn-ghost btn-sm" onClick={() => router.back()}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", marginBottom: "1rem" }}>
+        <button className="btn btn-ghost btn-sm" onClick={() => router.back()} style={{ borderRadius: "9999px", padding: "0.4rem 0.9rem" }}>
           ← Back
         </button>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <button
             className="btn btn-ghost btn-sm"
+            style={{ borderRadius: "9999px" }}
             onClick={() => setShowEditFriendModal(true)}
             title="Edit friend details & phone"
           >
@@ -898,75 +899,139 @@ export default function FriendDetailPage() {
           </button>
           <button
             className="btn btn-ghost btn-sm"
-            style={{ color: "var(--expense)", gap: "0.375rem" }}
+            style={{ borderRadius: "9999px", color: "var(--expense)", borderColor: "color-mix(in srgb, var(--expense) 30%, transparent)" }}
             onClick={() => setShowDeleteFriendModal(true)}
             title="Remove this friend"
           >
-            🗑️ Remove Friend
+            🗑️ Remove
           </button>
         </div>
       </div>
 
-      {/* Header */}
-      <div className="card" style={{ marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap" }}>
-        <div
-          style={{
-            width: "64px",
-            height: "64px",
-            borderRadius: "50%",
-            background: `hsl(${hue}, 55%, 50%)`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#fff",
-            fontWeight: 700,
-            fontSize: "1.25rem",
-            flexShrink: 0,
-          }}
-        >
-          {initials(friend.name)}
-        </div>
-        <div style={{ flex: "1 1 240px" }}>
-          <h1 style={{ fontSize: "1.5rem", marginBottom: "0.25rem" }}>{friend.name}</h1>
-          <div style={{ display: "flex", gap: "0.75rem 1rem", flexWrap: "wrap" }}>
-            {friend.email && <span style={{ color: "var(--muted)", fontSize: "0.875rem" }}>📧 {friend.email}</span>}
-            {friend.phone && (
-              <span style={{ color: "var(--muted)", fontSize: "0.875rem" }}>
-                📱 {formatDisplayPhone(friend.phone)}
-              </span>
-            )}
-            {friend.note && <span style={{ color: "var(--muted)", fontSize: "0.875rem" }}>📝 {friend.note}</span>}
+      {/* Header Profile Card */}
+      <div
+        className="card"
+        style={{
+          marginBottom: "1.25rem",
+          padding: "1.25rem 1.5rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "1.25rem",
+          flexWrap: "wrap",
+          background: "var(--surface)",
+          borderRadius: "var(--radius)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", flex: "1 1 240px" }}>
+          <div
+            style={{
+              width: "60px",
+              height: "60px",
+              borderRadius: "50%",
+              background: `linear-gradient(135deg, hsl(${hue}, 65%, 55%), var(--primary))`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: "1.35rem",
+              boxShadow: "0 4px 14px rgba(139, 92, 246, 0.3)",
+              flexShrink: 0,
+            }}
+          >
+            {initials(friend.name)}
+          </div>
+          <div>
+            <h1 style={{ fontSize: "1.375rem", fontWeight: 700, margin: 0, color: "var(--text)" }}>
+              {friend.name}
+            </h1>
+            <div style={{ display: "flex", gap: "0.5rem 0.75rem", flexWrap: "wrap", marginTop: "0.35rem" }}>
+              {friend.phone && (
+                <span
+                  className="badge"
+                  style={{
+                    background: "color-mix(in srgb, #25D366 15%, transparent)",
+                    color: "#25D366",
+                  }}
+                  title="WhatsApp phone"
+                >
+                  📱 {formatDisplayPhone(friend.phone)}
+                </span>
+              )}
+              {friend.email && (
+                <span className="badge" style={{ background: "var(--surface-2)", color: "var(--muted)" }}>
+                  📧 {friend.email}
+                </span>
+              )}
+            </div>
           </div>
         </div>
-        <div style={{ textAlign: "right", marginLeft: "auto" }}>
-          <p style={{ color: "var(--muted)", fontSize: "0.8rem", margin: 0 }}>{netLabel}</p>
-          <p className="money" style={{ fontSize: "2rem", fontFamily: "Poppins, sans-serif", fontWeight: 700, color: netColor, margin: 0 }}>
-            {Math.abs(net) < 0.01 ? "—" : formatCurrency(Math.abs(net), currency)}
+
+        <div style={{ textAlign: "right", marginLeft: "auto", minWidth: "120px" }}>
+          <span
+            className="badge"
+            style={{
+              background:
+                net > 0.01
+                  ? "color-mix(in srgb, var(--income) 15%, transparent)"
+                  : net < -0.01
+                  ? "color-mix(in srgb, var(--expense) 15%, transparent)"
+                  : "color-mix(in srgb, var(--primary) 15%, transparent)",
+              color: net > 0.01 ? "var(--income)" : net < -0.01 ? "var(--expense)" : "var(--primary)",
+              marginBottom: "0.25rem",
+            }}
+          >
+            {netLabel}
+          </span>
+          <p
+            className="money"
+            style={{
+              fontSize: "1.75rem",
+              fontFamily: "Poppins, sans-serif",
+              fontWeight: 700,
+              color: netColor,
+              margin: 0,
+              lineHeight: 1.2,
+            }}
+          >
+            {Math.abs(net) < 0.01 ? "LKR 0.00" : formatCurrency(Math.abs(net), currency)}
           </p>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "0.75rem", marginBottom: "1.25rem" }}>
+      {/* Stats Cards (2x2 on mobile, 4-col on desktop) */}
+      <div className="friend-stats-grid" style={{ marginBottom: "1.25rem" }}>
         {[
-          { label: "Times I gave", value: balance.timesGave },
-          { label: "Times I borrowed", value: balance.timesBorrowed },
-          { label: "Total given", value: formatCurrency(balance.totalGiven, currency) },
-          { label: "Total borrowed", value: formatCurrency(balance.totalBorrowed, currency) },
+          { label: "Times I Gave", value: balance.timesGave, color: "var(--income)" },
+          { label: "Times I Borrowed", value: balance.timesBorrowed, color: "var(--expense)" },
+          { label: "Total Given", value: formatCurrency(balance.totalGiven, currency), color: "var(--income)" },
+          { label: "Total Borrowed", value: formatCurrency(balance.totalBorrowed, currency), color: "var(--expense)" },
         ].map((s) => (
-          <div key={s.label} className="card" style={{ textAlign: "center", padding: "1rem 0.75rem" }}>
-            <p className="money" style={{ fontWeight: 700, fontSize: "1.25rem", margin: 0 }}>{s.value}</p>
-            <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: 0 }}>{s.label}</p>
+          <div key={s.label} className="card" style={{ textAlign: "center", padding: "1rem 0.75rem", borderRadius: "var(--radius-sm)" }}>
+            <p style={{ color: "var(--muted)", fontSize: "0.72rem", margin: "0 0 0.25rem", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              {s.label}
+            </p>
+            <p className="money" style={{ fontWeight: 700, fontSize: "1.25rem", margin: 0, color: s.color }}>
+              {s.value}
+            </p>
           </div>
         ))}
       </div>
 
-      {/* Quick Action buttons */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "0.625rem", marginBottom: "1.5rem" }}>
+      {/* Quick Action buttons (2x2 on mobile, row on desktop) */}
+      <div className="friend-actions-grid" style={{ marginBottom: "1.5rem" }}>
         <button
           id="btn-i-gave"
           className="btn btn-sm"
-          style={{ background: "var(--income)", color: "#fff" }}
+          style={{
+            background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+            color: "#fff",
+            fontWeight: 600,
+            borderRadius: "12px",
+            padding: "0.6rem 1rem",
+            boxShadow: "0 4px 12px rgba(16, 185, 129, 0.25)",
+          }}
           onClick={() => openAddWithDir("I_GAVE")}
         >
           💸 I gave
@@ -974,7 +1039,14 @@ export default function FriendDetailPage() {
         <button
           id="btn-i-borrowed"
           className="btn btn-sm"
-          style={{ background: "var(--expense)", color: "#fff" }}
+          style={{
+            background: "linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)",
+            color: "#fff",
+            fontWeight: 600,
+            borderRadius: "12px",
+            padding: "0.6rem 1rem",
+            boxShadow: "0 4px 12px rgba(244, 63, 94, 0.25)",
+          }}
           onClick={() => openAddWithDir("I_BORROWED")}
         >
           🤲 I borrowed
@@ -982,7 +1054,7 @@ export default function FriendDetailPage() {
         <button
           id="btn-they-paid"
           className="btn btn-sm btn-ghost"
-          style={{ border: "1px solid var(--border)" }}
+          style={{ borderRadius: "12px", padding: "0.6rem 1rem", fontWeight: 500 }}
           onClick={() => openAddWithDir("THEY_REPAID")}
         >
           ✅ They paid
@@ -990,7 +1062,7 @@ export default function FriendDetailPage() {
         <button
           id="btn-i-paid"
           className="btn btn-sm btn-ghost"
-          style={{ border: "1px solid var(--border)" }}
+          style={{ borderRadius: "12px", padding: "0.6rem 1rem", fontWeight: 500 }}
           onClick={() => openAddWithDir("I_REPAID")}
         >
           🔄 I paid
@@ -999,11 +1071,19 @@ export default function FriendDetailPage() {
           <button
             id="btn-settle-up"
             className="btn btn-sm"
-            style={{ background: "var(--accent)", color: "#000", fontWeight: 600 }}
+            style={{
+              gridColumn: "1 / -1",
+              background: "linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%)",
+              color: "#fff",
+              fontWeight: 600,
+              borderRadius: "12px",
+              padding: "0.6rem 1rem",
+              boxShadow: "0 4px 14px color-mix(in srgb, var(--accent) 30%, transparent)",
+            }}
             onClick={() => setShowSettleModal(true)}
             disabled={settling}
           >
-            🤝 Settle up
+            ✨ Settle up
           </button>
         )}
       </div>
@@ -1024,90 +1104,174 @@ export default function FriendDetailPage() {
               <p style={{ margin: 0 }}>No transactions yet. Use the buttons above to add one!</p>
             </div>
           ) : (
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Type</th>
-                    <th>Reason</th>
-                    <th style={{ textAlign: "right" }}>Amount</th>
-                    <th style={{ textAlign: "right" }}>Balance</th>
-                    <th style={{ textAlign: "center", width: "90px" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...friend.timeline].reverse().map((t) => {
-                    const meta = DIRECTION_LABELS[t.direction];
-                    return (
-                      <tr key={t.id}>
-                        <td style={{ whiteSpace: "nowrap", fontSize: "0.8rem", color: "var(--muted)" }}>
-                          {formatDate(t.date, "short")}
-                        </td>
-                        <td>
+            <>
+              {/* Desktop View: Full Table */}
+              <div className="desktop-only table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Type</th>
+                      <th>Reason</th>
+                      <th style={{ textAlign: "right" }}>Amount</th>
+                      <th style={{ textAlign: "right" }}>Balance</th>
+                      <th style={{ textAlign: "center", width: "90px" }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[...friend.timeline].reverse().map((t) => {
+                      const meta = DIRECTION_LABELS[t.direction];
+                      return (
+                        <tr key={t.id}>
+                          <td style={{ whiteSpace: "nowrap", fontSize: "0.8rem", color: "var(--muted)" }}>
+                            {formatDate(t.date, "short")}
+                          </td>
+                          <td>
+                            <span
+                              className="badge"
+                              style={{
+                                background: `color-mix(in srgb, ${meta.color} 15%, transparent)`,
+                                color: meta.color,
+                              }}
+                            >
+                              {meta.label}
+                            </span>
+                          </td>
+                          <td style={{ color: "var(--muted)", fontSize: "0.875rem" }}>
+                            {t.reason ?? "—"}
+                            {t.dueDate && (
+                              <span style={{ color: "var(--accent)", fontSize: "0.75rem", marginLeft: "0.375rem" }}>
+                                Due {formatDate(t.dueDate, "short")}
+                              </span>
+                            )}
+                          </td>
+                          <td style={{ textAlign: "right" }} className="money">
+                            <span style={{ color: meta.color, fontWeight: 600 }}>
+                              {meta.sign}{formatCurrency(t.amount, currency)}
+                            </span>
+                          </td>
+                          <td style={{ textAlign: "right" }} className="money">
+                            <span
+                              style={{
+                                color: t.runningBalance > 0 ? "var(--income)" : t.runningBalance < 0 ? "var(--expense)" : "var(--muted)",
+                                fontWeight: 500,
+                                fontSize: "0.875rem",
+                              }}
+                            >
+                              {formatCurrency(Math.abs(t.runningBalance), currency)}{" "}
+                              {t.runningBalance > 0 ? "▲" : t.runningBalance < 0 ? "▼" : ""}
+                            </span>
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            <div style={{ display: "inline-flex", gap: "0.25rem" }}>
+                              <button
+                                type="button"
+                                className="btn btn-ghost btn-sm"
+                                style={{ padding: "0.25rem 0.5rem" }}
+                                onClick={() => setEditingEntry(t)}
+                                title="Edit transaction"
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-ghost btn-sm"
+                                style={{ padding: "0.25rem 0.5rem", color: "var(--expense)" }}
+                                onClick={() => setDeleteTxId(t.id)}
+                                title="Delete transaction"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile View: Sleek Modern Cards (Image 3 inspired) */}
+              <div className="mobile-only" style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                {[...friend.timeline].reverse().map((t) => {
+                  const meta = DIRECTION_LABELS[t.direction];
+                  return (
+                    <div
+                      key={t.id}
+                      className="card"
+                      style={{
+                        padding: "0.875rem 1rem",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.5rem",
+                        borderRadius: "var(--radius-sm)",
+                        background: "var(--surface)",
+                        border: "1px solid var(--border)",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                           <span
                             className="badge"
                             style={{
                               background: `color-mix(in srgb, ${meta.color} 15%, transparent)`,
                               color: meta.color,
+                              fontWeight: 600,
                             }}
                           >
                             {meta.label}
                           </span>
-                        </td>
-                        <td style={{ color: "var(--muted)", fontSize: "0.875rem" }}>
-                          {t.reason ?? "—"}
-                          {t.dueDate && (
-                            <span style={{ color: "var(--accent)", fontSize: "0.75rem", marginLeft: "0.375rem" }}>
-                              Due {formatDate(t.dueDate, "short")}
-                            </span>
-                          )}
-                        </td>
-                        <td style={{ textAlign: "right" }} className="money">
-                          <span style={{ color: meta.color, fontWeight: 600 }}>
-                            {meta.sign}{formatCurrency(t.amount, currency)}
+                          <span style={{ fontSize: "0.78rem", color: "var(--muted)" }}>
+                            {formatDate(t.date, "short")}
                           </span>
-                        </td>
-                        <td style={{ textAlign: "right" }} className="money">
-                          <span
-                            style={{
-                              color: t.runningBalance > 0 ? "var(--income)" : t.runningBalance < 0 ? "var(--expense)" : "var(--muted)",
-                              fontWeight: 500,
-                              fontSize: "0.875rem",
-                            }}
+                        </div>
+                        <div style={{ display: "flex", gap: "0.35rem" }}>
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm"
+                            style={{ padding: "0.2rem 0.45rem", minHeight: "28px", fontSize: "0.75rem" }}
+                            onClick={() => setEditingEntry(t)}
+                            title="Edit"
                           >
-                            {formatCurrency(Math.abs(t.runningBalance), currency)}{" "}
-                            {t.runningBalance > 0 ? "▲" : t.runningBalance < 0 ? "▼" : ""}
+                            ✏️
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm"
+                            style={{ padding: "0.2rem 0.45rem", minHeight: "28px", fontSize: "0.75rem", color: "var(--expense)" }}
+                            onClick={() => setDeleteTxId(t.id)}
+                            title="Delete"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+
+                      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
+                        <div style={{ minWidth: 0, flex: 1, paddingRight: "0.5rem" }}>
+                          <p style={{ margin: 0, fontSize: "0.875rem", color: t.reason ? "var(--text)" : "var(--muted)", fontStyle: t.reason ? "normal" : "italic" }}>
+                            {t.reason || "No note specified"}
+                          </p>
+                          {t.dueDate && (
+                            <p style={{ margin: "0.2rem 0 0", fontSize: "0.72rem", color: "var(--accent)" }}>
+                              📅 Due {formatDate(t.dueDate, "short")}
+                            </p>
+                          )}
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <p className="money" style={{ margin: 0, fontWeight: 700, fontSize: "1.125rem", color: meta.color }}>
+                            {meta.sign}{formatCurrency(t.amount, currency)}
+                          </p>
+                          <span style={{ fontSize: "0.72rem", color: "var(--muted)" }}>
+                            Bal: {formatCurrency(Math.abs(t.runningBalance), currency)} {t.runningBalance > 0 ? "▲" : t.runningBalance < 0 ? "▼" : ""}
                           </span>
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          <div style={{ display: "inline-flex", gap: "0.25rem" }}>
-                            <button
-                              type="button"
-                              className="btn btn-ghost btn-sm"
-                              style={{ padding: "0.25rem 0.5rem" }}
-                              onClick={() => setEditingEntry(t)}
-                              title="Edit transaction"
-                            >
-                              ✏️
-                            </button>
-                            <button
-                              type="button"
-                              className="btn btn-ghost btn-sm"
-                              style={{ padding: "0.25rem 0.5rem", color: "var(--expense)" }}
-                              onClick={() => setDeleteTxId(t.id)}
-                              title="Delete transaction"
-                            >
-                              🗑️
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
 
