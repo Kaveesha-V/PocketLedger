@@ -24,7 +24,7 @@ export default function RemindersPage() {
   }, []);
 
   return (
-    <div style={{ padding: "1.5rem 2rem", maxWidth: "900px" }}>
+    <div className="page-container">
       <h1 style={{ marginBottom: "1.5rem" }}>Reminder History</h1>
 
       {loading ? (

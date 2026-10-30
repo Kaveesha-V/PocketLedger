@@ -97,7 +97,7 @@ export default function NewLedgerTransactionPage() {
   }
 
   return (
-    <div style={{ padding: "1.5rem 2rem", maxWidth: "600px" }}>
+    <div className="page-container" style={{ maxWidth: "680px" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <Link href="/friends" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "0.9rem" }}>
           ← Back to Friends
@@ -203,7 +203,7 @@ export default function NewLedgerTransactionPage() {
           </div>
 
           {/* Date & Due Date */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
             <div>
               <label className="label">Date</label>
               <input

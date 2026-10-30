@@ -138,7 +138,7 @@ export default function ReportsPage() {
   ];
 
   return (
-    <div style={{ padding: "1.5rem 2rem", maxWidth: "1100px" }}>
+    <div className="page-container">
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
         <h1>Reports</h1>
         <select className="input" style={{ width: "auto" }} value={month} onChange={(e) => setMonth(e.target.value)}>
@@ -147,7 +147,7 @@ export default function ReportsPage() {
       </div>
 
       {loading ? (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem" }}>
           {[1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: "300px" }} />)}
         </div>
       ) : (

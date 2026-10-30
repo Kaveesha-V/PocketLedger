@@ -120,9 +120,23 @@ a:hover { color: var(--primary-dark); }
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
   padding: 1.25rem;
-  transition: box-shadow var(--transition);
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
 }
-.card:hover { box-shadow: var(--shadow); }
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    box-shadow: var(--shadow);
+  }
+  .card-interactive:hover {
+    border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+}
+
+.card-interactive:active {
+  transform: scale(0.99);
+}
 
 /* ── Buttons ─────────────────────────────────────────────────── */
 .btn {
@@ -130,7 +144,8 @@ a:hover { color: var(--primary-dark); }
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.5rem 1.25rem;
+  padding: 0.55rem 1.25rem;
+  min-height: 40px;
   border-radius: var(--radius-sm);
   font-family: "Inter", sans-serif;
   font-size: 0.875rem;
@@ -139,40 +154,75 @@ a:hover { color: var(--primary-dark); }
   border: none;
   transition: all var(--transition);
   white-space: nowrap;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.btn:active {
+  transform: scale(0.97);
 }
 
 .btn-primary {
   background: var(--primary);
   color: #fff;
 }
-.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: var(--shadow); }
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+}
 
 .btn-accent {
   background: var(--accent);
   color: #10231d;
 }
-.btn-accent:hover { filter: brightness(1.08); transform: translateY(-1px); }
+@media (hover: hover) and (pointer: fine) {
+  .btn-accent:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+}
 
 .btn-ghost {
   background: transparent;
   color: var(--text);
   border: 1px solid var(--border);
 }
-.btn-ghost:hover { background: var(--surface-2); }
+@media (hover: hover) and (pointer: fine) {
+  .btn-ghost:hover {
+    background: var(--surface-2);
+    border-color: var(--muted);
+  }
+}
 
 .btn-danger {
   background: var(--expense);
   color: #fff;
 }
-.btn-danger:hover { filter: brightness(0.92); }
+@media (hover: hover) and (pointer: fine) {
+  .btn-danger:hover {
+    filter: brightness(0.92);
+    transform: translateY(-1px);
+  }
+}
 
-.btn-sm { padding: 0.3rem 0.75rem; font-size: 0.8125rem; }
-.btn-lg { padding: 0.75rem 2rem; font-size: 1rem; }
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  min-height: 34px;
+  font-size: 0.8125rem;
+}
+.btn-lg {
+  padding: 0.75rem 2rem;
+  min-height: 48px;
+  font-size: 1rem;
+}
 
 /* ── FAB (floating action button) ───────────────────────────── */
 .fab {
   position: fixed;
-  bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
   right: 1.25rem;
   width: 3.5rem;
   height: 3.5rem;
@@ -188,10 +238,16 @@ a:hover { color: var(--primary-dark); }
   font-size: 1.5rem;
   transition: all var(--transition);
   z-index: 50;
+  touch-action: manipulation;
 }
-.fab:hover {
-  transform: scale(1.1) rotate(45deg);
-  box-shadow: 0 6px 24px rgb(245 184 61 / 0.55);
+.fab:active {
+  transform: scale(0.95);
+}
+@media (hover: hover) and (pointer: fine) {
+  .fab:hover {
+    transform: scale(1.08) rotate(15deg);
+    box-shadow: 0 6px 24px rgb(245 184 61 / 0.55);
+  }
 }
 @media (min-width: 1024px) {
   .fab { bottom: 2rem; right: 2rem; }
@@ -225,10 +281,29 @@ a:hover { color: var(--primary-dark); }
 .badge-primary { background: color-mix(in srgb, var(--primary) 15%, transparent); color: var(--primary); }
 .badge-muted   { background: var(--surface-2); color: var(--muted); }
 
+/* ── Layout Container ────────────────────────────────────────── */
+.page-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 1rem 2rem;
+}
+@media (min-width: 640px) {
+  .page-container {
+    padding: 1.5rem 1.5rem 2.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .page-container {
+    padding: 2rem 2.5rem 3rem;
+  }
+}
+
 /* ── Form Elements ───────────────────────────────────────────── */
 .input {
   width: 100%;
-  padding: 0.5rem 0.875rem;
+  padding: 0.55rem 0.875rem;
+  min-height: 40px;
   background: var(--surface);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
@@ -239,9 +314,54 @@ a:hover { color: var(--primary-dark); }
   outline: none;
 }
 .input::placeholder { color: var(--muted); }
+@media (hover: hover) and (pointer: fine) {
+  .input:hover { border-color: var(--muted); }
+}
 .input:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+/* Explicit Select & Option styling */
+select.input,
+select {
+  cursor: pointer;
+  background-color: var(--surface);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: "Inter", sans-serif;
+  appearance: auto;
+  -webkit-appearance: menulist;
+  padding: 0.5rem 0.75rem;
+  min-height: 40px;
+}
+@media (hover: hover) and (pointer: fine) {
+  select.input:hover,
+  select:hover {
+    border-color: var(--muted);
+  }
+}
+select.input:focus,
+select:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+select option {
+  background-color: var(--surface);
+  color: var(--text);
+  padding: 8px 12px;
+}
+
+/* Mobile input size fix — prevent iOS auto-zoom */
+@media (max-width: 639px) {
+  .input,
+  select.input,
+  select,
+  textarea.input {
+    font-size: 16px !important;
+  }
 }
 
 .label {
@@ -258,8 +378,10 @@ a:hover { color: var(--primary-dark); }
 .table-wrap {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: var(--radius);
   border: 1px solid var(--border);
+  background: var(--surface);
 }
 
 table {
@@ -288,9 +410,13 @@ td {
   vertical-align: middle;
 }
 
-tbody tr:hover {
-  background: var(--surface-2);
+tbody tr {
   transition: background var(--transition);
+}
+@media (hover: hover) and (pointer: fine) {
+  tbody tr:hover {
+    background: var(--surface-2);
+  }
 }
 
 /* ── Divider ─────────────────────────────────────────────────── */

@@ -125,9 +125,9 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div style={{ padding: "2rem", maxWidth: "1200px" }}>
+      <div className="page-container">
         <div className="skeleton" style={{ height: "2.5rem", width: "280px", marginBottom: "1.5rem" }} />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="skeleton" style={{ height: "100px", borderRadius: "var(--radius)" }} />
           ))}
@@ -144,7 +144,7 @@ export default function DashboardPage() {
   const netFriendBalance = (data?.friends.totalOwedToMe ?? 0) - (data?.friends.totalIOwe ?? 0);
 
   return (
-    <div style={{ padding: "1.5rem 2rem", maxWidth: "1200px" }}>
+    <div className="page-container">
       {/* ── Top Header & Greeting ─────────────────────────────────── */}
       <div
         style={{
@@ -175,14 +175,14 @@ export default function DashboardPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
           gap: "0.75rem",
           marginBottom: "1.5rem",
         }}
       >
         <Link
           href="/ledger/new"
-          className="card"
+          className="card card-interactive"
           style={{
             textDecoration: "none",
             color: "inherit",
@@ -193,7 +193,6 @@ export default function DashboardPage() {
             border: "1px solid color-mix(in srgb, var(--income) 30%, transparent)",
             background: "color-mix(in srgb, var(--income) 8%, var(--surface))",
             borderRadius: "var(--radius)",
-            transition: "transform 150ms ease, box-shadow 150ms ease",
           }}
         >
           <span style={{ fontSize: "1.5rem" }}>💸</span>
@@ -205,7 +204,7 @@ export default function DashboardPage() {
 
         <Link
           href="/ledger/new"
-          className="card"
+          className="card card-interactive"
           style={{
             textDecoration: "none",
             color: "inherit",
@@ -216,7 +215,6 @@ export default function DashboardPage() {
             border: "1px solid color-mix(in srgb, var(--expense) 30%, transparent)",
             background: "color-mix(in srgb, var(--expense) 8%, var(--surface))",
             borderRadius: "var(--radius)",
-            transition: "transform 150ms ease, box-shadow 150ms ease",
           }}
         >
           <span style={{ fontSize: "1.5rem" }}>🤲</span>
@@ -228,7 +226,7 @@ export default function DashboardPage() {
 
         <Link
           href="/budget"
-          className="card"
+          className="card card-interactive"
           style={{
             textDecoration: "none",
             color: "inherit",
@@ -239,7 +237,6 @@ export default function DashboardPage() {
             border: "1px solid var(--border)",
             background: "var(--surface)",
             borderRadius: "var(--radius)",
-            transition: "transform 150ms ease, box-shadow 150ms ease",
           }}
         >
           <span style={{ fontSize: "1.5rem" }}>➕</span>
@@ -251,7 +248,7 @@ export default function DashboardPage() {
 
         <Link
           href="/friends"
-          className="card"
+          className="card card-interactive"
           style={{
             textDecoration: "none",
             color: "inherit",
@@ -262,7 +259,6 @@ export default function DashboardPage() {
             border: "1px solid var(--border)",
             background: "var(--surface)",
             borderRadius: "var(--radius)",
-            transition: "transform 150ms ease, box-shadow 150ms ease",
           }}
         >
           <span style={{ fontSize: "1.5rem" }}>👥</span>
@@ -277,7 +273,7 @@ export default function DashboardPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
           gap: "1rem",
           marginBottom: "1.5rem",
         }}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { formatCurrency, formatDate, initials, stringToHue } from "@/lib/format";
-import { buildWhatsappUrl, parseTemplates, renderTemplate } from "@/lib/messages";
+import { buildWhatsappUrl, formatDisplayPhone, parseTemplates, renderTemplate } from "@/lib/messages";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 type LedgerDirection = "I_GAVE" | "I_BORROWED" | "THEY_REPAID" | "I_REPAID";
@@ -397,12 +397,157 @@ function EditTxModal({
   );
 }
 
-function ReminderPanel({ friend, onSent }: { friend: FriendDetail; onSent: () => void }) {
+function EditFriendModal({
+  friend,
+  onClose,
+  onSaved,
+}: {
+  friend: FriendDetail;
+  onClose: () => void;
+  onSaved: (updated: { name: string; phone: string | null; email: string | null; note: string | null }) => void;
+}) {
+  const [form, setForm] = useState({
+    name: friend.name,
+    phone: friend.phone || "",
+    email: friend.email || "",
+    note: friend.note || "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.name.trim()) {
+      setError("Please enter a name.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/friends/${friend.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          phone: form.phone.trim() || null,
+          email: form.email.trim() || null,
+          note: form.note.trim() || null,
+        }),
+      });
+      const json = await res.json();
+      if (json.error) {
+        setError(json.error);
+        return;
+      }
+      onSaved(json.data);
+      onClose();
+    } catch {
+      setError("Failed to update friend.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        backgroundColor: "rgba(0,0,0,0.6)",
+        backdropFilter: "blur(4px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 100,
+        padding: "1rem",
+      }}
+      onClick={onClose}
+    >
+      <div
+        className="card animate-slide-up"
+        style={{ width: "100%", maxWidth: "460px", padding: "1.75rem", background: "var(--surface)", border: "1px solid var(--border)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 style={{ fontSize: "1.25rem", marginBottom: "1.25rem" }}>Edit Friend Details</h2>
+        {error && (
+          <div style={{ color: "var(--expense)", background: "color-mix(in srgb, var(--expense) 10%, transparent)", padding: "0.75rem", borderRadius: "var(--radius-sm)", marginBottom: "1rem", fontSize: "0.875rem" }}>
+            {error}
+          </div>
+        )}
+        <form onSubmit={submit}>
+          <div className="field">
+            <label className="label">Full Name *</label>
+            <input
+              className="input"
+              required
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            />
+          </div>
+          <div className="field">
+            <label className="label">
+              WhatsApp Number <span style={{ fontWeight: 400, color: "var(--muted)" }}>(e.g. 0769055019 or +94769055019)</span>
+            </label>
+            <input
+              className="input"
+              type="tel"
+              value={form.phone}
+              onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              placeholder="0769055019"
+            />
+          </div>
+          <div className="field">
+            <label className="label">Email Address</label>
+            <input
+              className="input"
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+              placeholder="friend@example.com"
+            />
+          </div>
+          <div className="field">
+            <label className="label">Note / Relationship</label>
+            <input
+              className="input"
+              value={form.note}
+              onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
+              placeholder="Roommate, batchmate, etc."
+            />
+          </div>
+          <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem" }}>
+            <button type="button" className="btn btn-ghost" style={{ flex: 1 }} onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={loading}>
+              {loading ? "Saving…" : "Save Changes"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function ReminderPanel({
+  friend,
+  onSent,
+  onOpenEdit,
+  onPhoneUpdated,
+}: {
+  friend: FriendDetail;
+  onSent: () => void;
+  onOpenEdit: () => void;
+  onPhoneUpdated: () => void;
+}) {
   const currency = "LKR";
   const [channel, setChannel] = useState<"whatsapp" | "email">("whatsapp");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [directWhatsappUrl, setDirectWhatsappUrl] = useState("");
+  const [inlinePhone, setInlinePhone] = useState("");
+  const [savingInlinePhone, setSavingInlinePhone] = useState(false);
 
   useEffect(() => {
     const templates = parseTemplates(null);
@@ -421,18 +566,45 @@ function ReminderPanel({ friend, onSent }: { friend: FriendDetail; onSent: () =>
     setMessage(rendered);
   }, [friend]);
 
+  async function saveInlinePhone() {
+    if (!inlinePhone.trim()) return;
+    setSavingInlinePhone(true);
+    try {
+      const res = await fetch(`/api/friends/${friend.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: inlinePhone.trim() }),
+      });
+      const json = await res.json();
+      if (!json.error) {
+        onPhoneUpdated();
+        setInlinePhone("");
+        setFeedback("✅ Phone number saved!");
+      }
+    } catch {
+      setFeedback("⚠️ Failed to save phone number.");
+    } finally {
+      setSavingInlinePhone(false);
+    }
+  }
+
   async function send() {
     setLoading(true);
     setFeedback("");
+    setDirectWhatsappUrl("");
     try {
       if (channel === "whatsapp") {
         if (!friend.phone) {
-          setFeedback("⚠️ No WhatsApp number added for this friend.");
+          setFeedback("⚠️ No WhatsApp number added for this friend. Please enter a phone number above.");
           setLoading(false);
           return;
         }
         const url = buildWhatsappUrl(friend.phone, message);
-        window.open(url, "_blank");
+        setDirectWhatsappUrl(url);
+
+        // Open in new tab/window
+        window.open(url, "_blank", "noopener,noreferrer");
+
         await fetch("/api/reminders/whatsapp-log", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -481,12 +653,94 @@ function ReminderPanel({ friend, onSent }: { friend: FriendDetail; onSent: () =>
               color: channel === ch ? "var(--primary)" : "var(--text)",
               fontWeight: channel === ch ? 600 : 400,
             }}
-            onClick={() => setChannel(ch)}
+            onClick={() => {
+              setChannel(ch);
+              setDirectWhatsappUrl("");
+            }}
           >
             {ch === "whatsapp" ? "💬 WhatsApp" : "📧 Email"}
           </button>
         ))}
       </div>
+
+      {channel === "whatsapp" && (
+        <div style={{ marginBottom: "0.875rem", fontSize: "0.85rem" }}>
+          {friend.phone ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: "0.5rem",
+                padding: "0.625rem 0.75rem",
+                borderRadius: "var(--radius-sm)",
+                background: "color-mix(in srgb, var(--primary) 8%, var(--surface))",
+                border: "1px solid color-mix(in srgb, var(--primary) 25%, transparent)",
+              }}
+            >
+              <span>
+                💬 Target WhatsApp: <strong style={{ color: "var(--primary)" }}>{formatDisplayPhone(friend.phone)}</strong>
+              </span>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", minHeight: "28px" }}
+                onClick={onOpenEdit}
+              >
+                ✏️ Edit
+              </button>
+            </div>
+          ) : (
+            <div
+              style={{
+                padding: "0.75rem",
+                borderRadius: "var(--radius-sm)",
+                background: "color-mix(in srgb, var(--accent) 15%, transparent)",
+                border: "1px solid color-mix(in srgb, var(--accent) 35%, transparent)",
+              }}
+            >
+              <p style={{ margin: "0 0 0.5rem", fontSize: "0.8rem", color: "var(--text)", fontWeight: 500 }}>
+                ⚠️ No WhatsApp number added for {friend.name}. Enter it below:
+              </p>
+              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                <input
+                  type="tel"
+                  className="input"
+                  style={{ flex: "1 1 180px", minHeight: "36px", padding: "0.35rem 0.75rem" }}
+                  placeholder="e.g. 0769055019 or +94769055019"
+                  value={inlinePhone}
+                  onChange={(e) => setInlinePhone(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={saveInlinePhone}
+                  disabled={savingInlinePhone || !inlinePhone.trim()}
+                >
+                  {savingInlinePhone ? "Saving…" : "Save Phone"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {channel === "email" && friend.email && (
+        <div
+          style={{
+            marginBottom: "0.875rem",
+            padding: "0.5rem 0.75rem",
+            borderRadius: "var(--radius-sm)",
+            background: "var(--surface-2)",
+            border: "1px solid var(--border)",
+            fontSize: "0.85rem",
+          }}
+        >
+          📧 Target Email: <strong>{friend.email}</strong>
+        </div>
+      )}
+
       <textarea
         className="input"
         rows={5}
@@ -499,6 +753,7 @@ function ReminderPanel({ friend, onSent }: { friend: FriendDetail; onSent: () =>
           {feedback}
         </p>
       )}
+
       <button
         id="btn-send-reminder"
         className="btn btn-primary"
@@ -508,6 +763,24 @@ function ReminderPanel({ friend, onSent }: { friend: FriendDetail; onSent: () =>
       >
         {loading ? "Sending…" : `Send via ${channel === "whatsapp" ? "WhatsApp" : "Email"}`}
       </button>
+
+      {directWhatsappUrl && channel === "whatsapp" && (
+        <a
+          href={directWhatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-ghost btn-sm"
+          style={{
+            width: "100%",
+            marginTop: "0.5rem",
+            color: "var(--primary)",
+            borderColor: "var(--primary)",
+            fontWeight: 600,
+          }}
+        >
+          💬 Tap Here to Open WhatsApp Directly ↗
+        </a>
+      )}
     </div>
   );
 }
@@ -525,6 +798,7 @@ export default function FriendDetailPage() {
   const [editingEntry, setEditingEntry] = useState<TimelineEntry | null>(null);
 
   // Custom modals state
+  const [showEditFriendModal, setShowEditFriendModal] = useState(false);
   const [showSettleModal, setShowSettleModal] = useState(false);
   const [settling, setSettling] = useState(false);
   const [deleteTxId, setDeleteTxId] = useState<string | null>(null);
@@ -608,20 +882,29 @@ export default function FriendDetailPage() {
   const hue = stringToHue(friend.name);
 
   return (
-    <div style={{ padding: "1.5rem 2rem", maxWidth: "920px" }}>
-      {/* Top Bar with Back + Remove Friend */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+    <div className="page-container">
+      {/* Top Bar with Back + Edit Friend + Remove Friend */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1rem" }}>
         <button className="btn btn-ghost btn-sm" onClick={() => router.back()}>
           ← Back
         </button>
-        <button
-          className="btn btn-ghost btn-sm"
-          style={{ color: "var(--expense)", gap: "0.375rem" }}
-          onClick={() => setShowDeleteFriendModal(true)}
-          title="Remove this friend"
-        >
-          🗑️ Remove Friend
-        </button>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => setShowEditFriendModal(true)}
+            title="Edit friend details & phone"
+          >
+            ✏️ Edit Friend
+          </button>
+          <button
+            className="btn btn-ghost btn-sm"
+            style={{ color: "var(--expense)", gap: "0.375rem" }}
+            onClick={() => setShowDeleteFriendModal(true)}
+            title="Remove this friend"
+          >
+            🗑️ Remove Friend
+          </button>
+        </div>
       </div>
 
       {/* Header */}
@@ -643,15 +926,19 @@ export default function FriendDetailPage() {
         >
           {initials(friend.name)}
         </div>
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: "1 1 240px" }}>
           <h1 style={{ fontSize: "1.5rem", marginBottom: "0.25rem" }}>{friend.name}</h1>
-          <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "0.75rem 1rem", flexWrap: "wrap" }}>
             {friend.email && <span style={{ color: "var(--muted)", fontSize: "0.875rem" }}>📧 {friend.email}</span>}
-            {friend.phone && <span style={{ color: "var(--muted)", fontSize: "0.875rem" }}>📱 {friend.phone}</span>}
+            {friend.phone && (
+              <span style={{ color: "var(--muted)", fontSize: "0.875rem" }}>
+                📱 {formatDisplayPhone(friend.phone)}
+              </span>
+            )}
             {friend.note && <span style={{ color: "var(--muted)", fontSize: "0.875rem" }}>📝 {friend.note}</span>}
           </div>
         </div>
-        <div style={{ textAlign: "right" }}>
+        <div style={{ textAlign: "right", marginLeft: "auto" }}>
           <p style={{ color: "var(--muted)", fontSize: "0.8rem", margin: 0 }}>{netLabel}</p>
           <p className="money" style={{ fontSize: "2rem", fontFamily: "Poppins, sans-serif", fontWeight: 700, color: netColor, margin: 0 }}>
             {Math.abs(net) < 0.01 ? "—" : formatCurrency(Math.abs(net), currency)}
@@ -660,14 +947,14 @@ export default function FriendDetailPage() {
       </div>
 
       {/* Stats Cards */}
-      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1.25rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "0.75rem", marginBottom: "1.25rem" }}>
         {[
           { label: "Times I gave", value: balance.timesGave },
           { label: "Times I borrowed", value: balance.timesBorrowed },
           { label: "Total given", value: formatCurrency(balance.totalGiven, currency) },
           { label: "Total borrowed", value: formatCurrency(balance.totalBorrowed, currency) },
         ].map((s) => (
-          <div key={s.label} className="card" style={{ flex: "1 1 120px", textAlign: "center", padding: "1rem" }}>
+          <div key={s.label} className="card" style={{ textAlign: "center", padding: "1rem 0.75rem" }}>
             <p className="money" style={{ fontWeight: 700, fontSize: "1.25rem", margin: 0 }}>{s.value}</p>
             <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: 0 }}>{s.label}</p>
           </div>
@@ -675,7 +962,7 @@ export default function FriendDetailPage() {
       </div>
 
       {/* Quick Action buttons */}
-      <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "0.625rem", marginBottom: "1.5rem" }}>
         <button
           id="btn-i-gave"
           className="btn btn-sm"
@@ -825,8 +1112,25 @@ export default function FriendDetailPage() {
         </div>
 
         {/* Reminder panel */}
-        <ReminderPanel friend={friend} onSent={load} />
+        <ReminderPanel
+          friend={friend}
+          onSent={load}
+          onOpenEdit={() => setShowEditFriendModal(true)}
+          onPhoneUpdated={load}
+        />
       </div>
+
+      {/* Edit Friend Modal */}
+      {showEditFriendModal && (
+        <EditFriendModal
+          friend={friend}
+          onClose={() => setShowEditFriendModal(false)}
+          onSaved={(updated) => {
+            setFriend((f) => (f ? { ...f, ...updated } : f));
+            load();
+          }}
+        />
+      )}
 
       {/* Quick Add Modal */}
       {showAdd && (

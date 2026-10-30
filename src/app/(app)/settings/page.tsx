@@ -261,7 +261,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div style={{ padding: "1.5rem 2rem", maxWidth: "800px", paddingBottom: "5rem" }}>
+    <div className="page-container" style={{ maxWidth: "1000px" }}>
       <h1 style={{ marginBottom: "1.5rem" }}>Settings & Preferences</h1>
 
       {successMsg && (
@@ -300,7 +300,7 @@ export default function SettingsPage() {
       <div className="card" style={{ marginBottom: "1.5rem" }}>
         <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>👤 Profile & Preferences</h2>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1rem" }}>
           <div>
             <label className="label">Full Name</label>
             <input
@@ -323,11 +323,11 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <label className="label">WhatsApp Number (with country code)</label>
+            <label className="label">WhatsApp Number</label>
             <input
-              type="text"
+              type="tel"
               className="input"
-              placeholder="+94771234567"
+              placeholder="e.g. 0769055019 or +94771234567"
               value={profile.phone}
               onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
             />
@@ -511,7 +511,7 @@ export default function SettingsPage() {
             />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem" }}>
             <div>
               <label className="label">New Password (min 8 chars)</label>
               <input
