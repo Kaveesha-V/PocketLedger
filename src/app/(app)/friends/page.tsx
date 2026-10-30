@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatCurrency, initials, stringToHue, formatDate } from "@/lib/format";
+import { formatDisplayPhone } from "@/lib/messages";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 interface FriendSummary {
@@ -109,7 +110,7 @@ function AddFriendModal({ onClose, onAdd }: { onClose: () => void; onAdd: (f: Fr
           </div>
           <div className="field">
             <label className="label" htmlFor="fphone">
-              WhatsApp number <span style={{ fontWeight: 400, color: "var(--muted)" }}>(with country code)</span>
+              WhatsApp number <span style={{ fontWeight: 400, color: "var(--muted)" }}>(e.g. 0769055019 or +94771234567)</span>
             </label>
             <input
               id="fphone"
@@ -117,7 +118,7 @@ function AddFriendModal({ onClose, onAdd }: { onClose: () => void; onAdd: (f: Fr
               type="tel"
               value={form.phone}
               onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-              placeholder="+94771234567"
+              placeholder="0769055019"
             />
           </div>
           <div className="field">
@@ -199,7 +200,7 @@ export default function FriendsPage() {
   ];
 
   return (
-    <div style={{ padding: "1.5rem 2rem", maxWidth: "920px" }}>
+    <div className="page-container">
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
         <div>
           <h1 style={{ fontSize: "1.5rem", marginBottom: "0.25rem" }}>Friends & Ledger</h1>
@@ -241,9 +242,9 @@ export default function FriendsPage() {
       </div>
 
       {loading ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="skeleton" style={{ height: "88px", borderRadius: "var(--radius)" }} />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1rem" }}>
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="skeleton" style={{ height: "120px", borderRadius: "var(--radius)" }} />
           ))}
         </div>
       ) : filtered.length === 0 ? (
@@ -258,7 +259,7 @@ export default function FriendsPage() {
           </button>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1rem" }}>
           {filtered.map((f) => {
             const hue = stringToHue(f.name);
             const net = f.balance.net;
@@ -267,30 +268,28 @@ export default function FriendsPage() {
             return (
               <div
                 key={f.id}
-                className="card"
+                className="card card-interactive"
                 style={{
                   display: "flex",
-                  alignItems: "center",
-                  gap: "1rem",
-                  padding: "1rem 1.25rem",
-                  transition: "transform 150ms ease, box-shadow 150ms ease",
+                  flexDirection: "column",
+                  gap: "0.875rem",
+                  padding: "1.125rem",
                 }}
               >
                 <Link
                   href={`/friends/${f.id}`}
                   style={{
                     display: "flex",
-                    alignItems: "center",
-                    gap: "1rem",
-                    flex: 1,
+                    alignItems: "flex-start",
+                    gap: "0.875rem",
                     textDecoration: "none",
                     color: "inherit",
                   }}
                 >
                   <div
                     style={{
-                      width: "46px",
-                      height: "46px",
+                      width: "48px",
+                      height: "48px",
                       borderRadius: "50%",
                       background: `hsl(${hue}, 55%, 50%)`,
                       display: "flex",
@@ -298,52 +297,72 @@ export default function FriendsPage() {
                       justifyContent: "center",
                       color: "#fff",
                       fontWeight: 700,
-                      fontSize: "0.95rem",
+                      fontSize: "1rem",
                       flexShrink: 0,
                     }}
                   >
                     {initials(f.name)}
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ fontWeight: 600, fontSize: "1rem", margin: 0 }}>{f.name}</p>
-                    <p style={{ color: "var(--muted)", fontSize: "0.8rem", margin: "0.125rem 0 0" }}>
-                      {f.txCount} transaction{f.txCount !== 1 ? "s" : ""} ·{" "}
-                      {f.lastActivity ? `Last: ${formatDate(f.lastActivity, "short")}` : "No activity"}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontWeight: 600, fontSize: "1rem", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {f.name}
                     </p>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <p className="money" style={{ fontWeight: 700, color: netColor, margin: 0, fontSize: "1rem" }}>
-                      {net > 0.01 || net < -0.01 ? formatCurrency(Math.abs(net), currency) : "—"}
-                    </p>
-                    <p style={{ fontSize: "0.75rem", color: netColor, margin: "0.125rem 0 0", fontWeight: 500 }}>
-                      {netLabel}
+                    {f.phone && (
+                      <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: "0.15rem 0 0" }}>
+                        📱 {formatDisplayPhone(f.phone)}
+                      </p>
+                    )}
+                    <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: "0.15rem 0 0" }}>
+                      {f.txCount} tx{f.txCount !== 1 ? "s" : ""} · {f.lastActivity ? `Last: ${formatDate(f.lastActivity, "short")}` : "No activity"}
                     </p>
                   </div>
                 </Link>
 
-                {/* Friend Actions (View & Delete) */}
-                <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", paddingLeft: "0.5rem", borderLeft: "1px solid var(--border)" }}>
-                  <Link
-                    href={`/friends/${f.id}`}
-                    className="btn btn-ghost btn-sm"
-                    style={{ padding: "0.375rem 0.625rem", fontSize: "0.8125rem" }}
-                  >
-                    Open →
-                  </Link>
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-sm"
-                    style={{ color: "var(--expense)", padding: "0.375rem 0.5rem" }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setDeleteTarget(f);
-                    }}
-                    title="Remove friend"
-                    aria-label={`Remove ${f.name}`}
-                  >
-                    🗑️
-                  </button>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    paddingTop: "0.75rem",
+                    borderTop: "1px solid var(--border)",
+                    marginTop: "auto",
+                  }}
+                >
+                  <div>
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                        color: netColor,
+                        display: "inline-block",
+                      }}
+                    >
+                      {netLabel}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
+                    <Link
+                      href={`/friends/${f.id}`}
+                      className="btn btn-ghost btn-sm"
+                      style={{ padding: "0.25rem 0.625rem", fontSize: "0.8125rem", minHeight: "32px" }}
+                    >
+                      Open →
+                    </Link>
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      style={{ color: "var(--expense)", padding: "0.25rem 0.5rem", minHeight: "32px" }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setDeleteTarget(f);
+                      }}
+                      title="Remove friend"
+                      aria-label={`Remove ${f.name}`}
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </div>
               </div>
             );

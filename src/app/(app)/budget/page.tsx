@@ -223,7 +223,7 @@ export default function BudgetPage() {
   const catOptions = (type: "INCOME" | "EXPENSE") => categories.filter((c) => c.type === type);
 
   return (
-    <div style={{ padding: "1.5rem 2rem", maxWidth: "1200px" }}>
+    <div className="page-container">
       {/* Top Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
         <div>
@@ -300,6 +300,119 @@ export default function BudgetPage() {
           </button>
         ))}
       </div>
+
+      {/* Mobile Quick Add Form (< 768px) */}
+      <div className="card mobile-budget-form" style={{ marginBottom: "1.25rem", padding: "1.25rem" }}>
+        <h3 style={{ fontSize: "1rem", marginBottom: "0.875rem" }}>➕ Add Budget Entry</h3>
+        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.75rem" }}>
+          {(["EXPENSE", "INCOME"] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              className="btn btn-sm"
+              style={{
+                flex: 1,
+                border: `2px solid ${newRow.type === t ? (t === "INCOME" ? "var(--income)" : "var(--expense)") : "var(--border)"}`,
+                background: newRow.type === t ? (t === "INCOME" ? "color-mix(in srgb, var(--income) 15%, transparent)" : "color-mix(in srgb, var(--expense) 15%, transparent)") : "transparent",
+                color: newRow.type === t ? (t === "INCOME" ? "var(--income)" : "var(--expense)") : "var(--text)",
+                fontWeight: newRow.type === t ? 600 : 400,
+              }}
+              onClick={() => setNewRow((r) => ({ ...r, type: t, categoryId: "" }))}
+            >
+              {t === "INCOME" ? "💚 Income" : "🔴 Expense"}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
+          <div>
+            <label className="label">Title *</label>
+            <input
+              className="input"
+              placeholder="e.g. Lunch"
+              value={newRow.title}
+              onChange={(e) => setNewRow((r) => ({ ...r, title: e.target.value }))}
+            />
+          </div>
+          <div>
+            <label className="label">Amount ({currency}) *</label>
+            <input
+              className="input"
+              type="number"
+              step="0.01"
+              min="0.01"
+              placeholder="0.00"
+              value={newRow.amount}
+              onChange={(e) => setNewRow((r) => ({ ...r, amount: e.target.value }))}
+            />
+          </div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
+          <div>
+            <label className="label">Category</label>
+            <select
+              className="input"
+              value={newRow.categoryId}
+              onChange={(e) => setNewRow((r) => ({ ...r, categoryId: e.target.value }))}
+            >
+              <option value="">— Select Category —</option>
+              {catOptions(newRow.type).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.icon} {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="label">Payment Method</label>
+            <select
+              className="input"
+              value={newRow.method}
+              onChange={(e) => setNewRow((r) => ({ ...r, method: e.target.value }))}
+            >
+              {METHODS.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.875rem" }}>
+          <div>
+            <label className="label">Date</label>
+            <input
+              className="input"
+              type="date"
+              value={newRow.date}
+              onChange={(e) => setNewRow((r) => ({ ...r, date: e.target.value }))}
+            />
+          </div>
+          <div>
+            <label className="label">Note (optional)</label>
+            <input
+              className="input"
+              placeholder="Note…"
+              value={newRow.note}
+              onChange={(e) => setNewRow((r) => ({ ...r, note: e.target.value }))}
+            />
+          </div>
+        </div>
+        <button
+          type="button"
+          className="btn btn-primary"
+          style={{ width: "100%", fontWeight: 600 }}
+          onClick={addEntry}
+          disabled={saving || !newRow.title.trim() || !newRow.amount}
+        >
+          {saving ? "Adding…" : `+ Add ${newRow.type === "INCOME" ? "Income" : "Expense"}`}
+        </button>
+      </div>
+
+      <style>{`
+        @media (min-width: 768px) {
+          .mobile-budget-form { display: none !important; }
+        }
+      `}</style>
 
       {/* Table Container */}
       <div className="table-wrap" style={{ marginBottom: "1.25rem" }}>
@@ -554,7 +667,7 @@ export default function BudgetPage() {
                   value={newRow.categoryId}
                   onChange={(e) => setNewRow((r) => ({ ...r, categoryId: e.target.value }))}
                 >
-                  <option value="">— Category —</option>
+                  <option value="">— Select Category —</option>
                   {catOptions(newRow.type).map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.icon} {c.name}
