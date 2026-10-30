@@ -16,6 +16,7 @@ import {
   AlertCircle,
   Info,
   Loader2,
+  Calendar,
 } from "lucide-react";
 
 interface Category {
@@ -239,31 +240,35 @@ export default function BudgetPage() {
   return (
     <div className="page-container">
       {/* Top Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+      <div className="budget-header-row">
         <div>
           <h1 style={{ fontSize: "1.5rem", marginBottom: "0.25rem" }}>Budget Sheet</h1>
           <p style={{ color: "var(--muted)", fontSize: "0.875rem", margin: 0 }}>
             Log and manage your daily income and expenses
           </p>
         </div>
-        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+        <div className="budget-header-actions">
           {savedMsg && (
             <span style={{ color: "var(--income)", fontSize: "0.875rem", fontWeight: 600, animation: "fadeIn 200ms" }}>
-              <><Check size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} />{savedMsg}</>
+              <Check size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} />
+              {savedMsg}
             </span>
           )}
-          <select
-            className="input"
-            style={{ width: "auto", fontWeight: 500 }}
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-          >
-            {getMonthOptions().map((m) => (
-              <option key={m.key} value={m.key}>
-                {m.label}
-              </option>
-            ))}
-          </select>
+          <div className="budget-date-selector-card">
+            <Calendar size={16} style={{ color: "var(--primary)", flexShrink: 0 }} />
+            <select
+              aria-label="Select Budget Month"
+              className="budget-month-select"
+              value={month}
+              onChange={(e) => setMonth(e.target.value)}
+            >
+              {getMonthOptions().map((m) => (
+                <option key={m.key} value={m.key}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -291,12 +296,15 @@ export default function BudgetPage() {
 
       {/* Filters & Search */}
       <div className="budget-filters-bar">
-        <input
-          className="input budget-search-input"
-          placeholder="Search entries…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="budget-search-wrapper">
+          <Search size={16} style={{ position: "absolute", left: "0.85rem", top: "50%", transform: "translateY(-50%)", color: "var(--muted)", pointerEvents: "none" }} />
+          <input
+            className="input budget-search-input"
+            placeholder="Search entries…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
         <div className="budget-filter-tabs">
           {(["ALL", "INCOME", "EXPENSE"] as const).map((t) => (
             <button
@@ -342,7 +350,7 @@ export default function BudgetPage() {
             </button>
           ))}
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.625rem", marginBottom: "0.75rem" }}>
+        <div className="budget-form-field-grid">
           <div style={{ minWidth: 0 }}>
             <label className="label">Title *</label>
             <input
@@ -365,7 +373,7 @@ export default function BudgetPage() {
             />
           </div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.625rem", marginBottom: "0.75rem" }}>
+        <div className="budget-form-field-grid">
           <div style={{ minWidth: 0 }}>
             <label className="label">Category</label>
             <select
@@ -398,8 +406,8 @@ export default function BudgetPage() {
             </select>
           </div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.625rem", marginBottom: "0.875rem" }}>
-          <div style={{ minWidth: 0, overflow: "hidden" }}>
+        <div className="budget-form-field-grid" style={{ marginBottom: "0.875rem" }}>
+          <div style={{ minWidth: 0 }}>
             <label className="label">Date</label>
             <input
               className="input"
@@ -409,7 +417,7 @@ export default function BudgetPage() {
               onChange={(e) => setNewRow((r) => ({ ...r, date: e.target.value }))}
             />
           </div>
-          <div style={{ minWidth: 0, overflow: "hidden" }}>
+          <div style={{ minWidth: 0 }}>
             <label className="label">Note (optional)</label>
             <input
               className="input"
