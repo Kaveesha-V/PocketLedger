@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { FriendSchema, ok, err } from "@/lib/validators";
 import { calcBalance } from "@/lib/ledger";
+import { normalizePhoneNumber } from "@/lib/messages";
 
 export async function GET(req: Request) {
   const session = await auth();
@@ -53,15 +54,39 @@ export async function POST(req: Request) {
     return NextResponse.json(err(parsed.error.errors[0].message), { status: 400 });
   }
 
+  const rawPhone = parsed.data.phone?.trim();
+  const phone = rawPhone ? normalizePhoneNumber(rawPhone) : null;
+
   const friend = await prisma.friend.create({
     data: {
       userId: session.user.id,
-      name: parsed.data.name,
-      email: parsed.data.email || null,
-      phone: parsed.data.phone ?? null,
-      note: parsed.data.note ?? null,
+      name: parsed.data.name.trim(),
+      email: parsed.data.email?.trim() || null,
+      phone,
+      note: parsed.data.note?.trim() || null,
     },
   });
 
-  return NextResponse.json(ok(friend), { status: 201 });
+  const result = {
+    id: friend.id,
+    name: friend.name,
+    email: friend.email,
+    phone: friend.phone,
+    note: friend.note,
+    archived: friend.archived,
+    balance: {
+      net: 0,
+      timesGave: 0,
+      timesBorrowed: 0,
+      totalGave: 0,
+      totalBorrowed: 0,
+      totalTheyRepaid: 0,
+      totalIRepaid: 0,
+    },
+    txCount: 0,
+    lastActivity: null,
+    lastReminder: null,
+  };
+
+  return NextResponse.json(ok(result), { status: 201 });
 }
