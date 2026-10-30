@@ -245,7 +245,7 @@ a:hover { color: var(--primary-dark); }
 }
 @media (hover: hover) and (pointer: fine) {
   .fab:hover {
-    transform: scale(1.08) rotate(15deg);
+    transform: scale(1.05);
     box-shadow: 0 6px 24px rgb(245 184 61 / 0.55);
   }
 }

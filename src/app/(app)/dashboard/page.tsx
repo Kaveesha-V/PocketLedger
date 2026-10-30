@@ -181,7 +181,7 @@ export default function DashboardPage() {
         }}
       >
         <Link
-          href="/ledger/new"
+          href="/ledger/new?direction=I_GAVE"
           className="card card-interactive"
           style={{
             textDecoration: "none",
@@ -203,7 +203,7 @@ export default function DashboardPage() {
         </Link>
 
         <Link
-          href="/ledger/new"
+          href="/ledger/new?direction=I_BORROWED"
           className="card card-interactive"
           style={{
             textDecoration: "none",
@@ -664,10 +664,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Floating Action Button */}
-      <Link href="/ledger/new" className="fab" aria-label="Quick add transaction" title="Add Lend/Borrow">
-        +
-      </Link>
     </div>
   );
 }
