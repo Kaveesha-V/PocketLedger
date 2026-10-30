@@ -184,7 +184,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ── Main content ─────────────────────────────────────────────── */}
-      <main style={{ flex: 1, minWidth: 0, paddingBottom: "5rem" }}>
+      <main className="app-main" style={{ flex: 1, minWidth: 0 }}>
         {/* Mobile Top Header */}
         <header
           className="mobile-top-header"
@@ -192,7 +192,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             display: "none",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "0.875rem 1.25rem",
+            padding: "0.75rem 1rem",
             background: "var(--surface)",
             borderBottom: "1px solid var(--border)",
             position: "sticky",
@@ -251,7 +251,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 padding: "0.625rem 0",
                 textDecoration: "none",
                 color: active ? "var(--primary)" : "var(--muted)",
-                fontSize: "0.625rem",
+                fontSize: "0.6875rem",
                 fontWeight: active ? 600 : 400,
                 transition: "color 200ms",
               }}
@@ -268,10 +268,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           .mobile-bottom-nav { display: none !important; }
           .mobile-top-header { display: none !important; }
           .desktop-sidebar { display: flex !important; }
+          .app-main { padding-bottom: 2rem !important; }
         }
         @media (max-width: 1023px) {
           .desktop-sidebar { display: none !important; }
           .mobile-top-header { display: flex !important; }
+          .app-main { padding-bottom: 5.5rem !important; }
         }
       `}</style>
     </div>

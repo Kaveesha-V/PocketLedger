@@ -142,7 +142,7 @@ export default function CategoriesPage() {
   });
 
   return (
-    <div style={{ padding: "1.5rem 2rem", maxWidth: "900px" }}>
+    <div className="page-container" style={{ maxWidth: "1000px" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
