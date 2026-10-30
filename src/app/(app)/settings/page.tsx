@@ -52,6 +52,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingTemplates, setSavingTemplates] = useState(false);
+  const [templateLang, setTemplateLang] = useState<"si" | "en">("si");
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -418,65 +419,140 @@ export default function SettingsPage() {
             Reset to Defaults
           </button>
         </div>
-        <p style={{ color: "var(--muted)", fontSize: "0.85rem", marginBottom: "1.25rem" }}>
-          Variables available: <code>{"{friend}"}</code>, <code>{"{currency}"}</code>, <code>{"{amount}"}</code>, <code>{"{count}"}</code>, <code>{"{lastDate}"}</code>, <code>{"{date}"}</code>, <code>{"{myName}"}</code>
+        <p style={{ color: "var(--muted)", fontSize: "0.85rem", marginBottom: "1rem" }}>
+          Variables available: <code>{"{friend}"}</code>, <code>{"{currency}"}</code>, <code>{"{amount}"}</code>, <code>{"{date}"}</code>, <code>{"{myName}"}</code>
         </p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-          <div>
-            <label className="label" style={{ fontWeight: 600, color: "var(--income)" }}>
-              Template: Friend Owes Me
-            </label>
-            <textarea
-              className="input"
-              rows={4}
-              style={{ fontFamily: "monospace", fontSize: "0.85rem", resize: "vertical" }}
-              value={profile.reminderTemplates.theyOweMe}
-              onChange={(e) =>
-                setProfile({
-                  ...profile,
-                  reminderTemplates: { ...profile.reminderTemplates, theyOweMe: e.target.value },
-                })
-              }
-            />
-          </div>
-
-          <div>
-            <label className="label" style={{ fontWeight: 600, color: "var(--expense)" }}>
-              Template: I Owe Friend
-            </label>
-            <textarea
-              className="input"
-              rows={4}
-              style={{ fontFamily: "monospace", fontSize: "0.85rem", resize: "vertical" }}
-              value={profile.reminderTemplates.iOweThem}
-              onChange={(e) =>
-                setProfile({
-                  ...profile,
-                  reminderTemplates: { ...profile.reminderTemplates, iOweThem: e.target.value },
-                })
-              }
-            />
-          </div>
-
-          <div>
-            <label className="label" style={{ fontWeight: 600, color: "var(--primary)" }}>
-              Template: All Settled
-            </label>
-            <textarea
-              className="input"
-              rows={3}
-              style={{ fontFamily: "monospace", fontSize: "0.85rem", resize: "vertical" }}
-              value={profile.reminderTemplates.settled}
-              onChange={(e) =>
-                setProfile({
-                  ...profile,
-                  reminderTemplates: { ...profile.reminderTemplates, settled: e.target.value },
-                })
-              }
-            />
-          </div>
+        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.25rem" }}>
+          <button
+            type="button"
+            className={`btn btn-sm ${templateLang === "si" ? "btn-primary" : "btn-ghost"}`}
+            onClick={() => setTemplateLang("si")}
+          >
+            සිංහල Templates (Sinhala)
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${templateLang === "en" ? "btn-primary" : "btn-ghost"}`}
+            onClick={() => setTemplateLang("en")}
+          >
+            English Templates
+          </button>
         </div>
+
+        {templateLang === "si" ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            <div>
+              <label className="label" style={{ fontWeight: 600, color: "var(--income)" }}>
+                Template: Friend Owes Me (සිංහල)
+              </label>
+              <textarea
+                className="input"
+                rows={4}
+                style={{ fontFamily: "monospace", fontSize: "0.85rem", resize: "vertical" }}
+                value={profile.reminderTemplates.theyOweMeSi || ""}
+                onChange={(e) =>
+                  setProfile({
+                    ...profile,
+                    reminderTemplates: { ...profile.reminderTemplates, theyOweMeSi: e.target.value },
+                  })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="label" style={{ fontWeight: 600, color: "var(--expense)" }}>
+                Template: I Owe Friend (සිංහල)
+              </label>
+              <textarea
+                className="input"
+                rows={4}
+                style={{ fontFamily: "monospace", fontSize: "0.85rem", resize: "vertical" }}
+                value={profile.reminderTemplates.iOweThemSi || ""}
+                onChange={(e) =>
+                  setProfile({
+                    ...profile,
+                    reminderTemplates: { ...profile.reminderTemplates, iOweThemSi: e.target.value },
+                  })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="label" style={{ fontWeight: 600, color: "var(--primary)" }}>
+                Template: All Settled (සිංහල)
+              </label>
+              <textarea
+                className="input"
+                rows={3}
+                style={{ fontFamily: "monospace", fontSize: "0.85rem", resize: "vertical" }}
+                value={profile.reminderTemplates.settledSi || ""}
+                onChange={(e) =>
+                  setProfile({
+                    ...profile,
+                    reminderTemplates: { ...profile.reminderTemplates, settledSi: e.target.value },
+                  })
+                }
+              />
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            <div>
+              <label className="label" style={{ fontWeight: 600, color: "var(--income)" }}>
+                Template: Friend Owes Me (English)
+              </label>
+              <textarea
+                className="input"
+                rows={4}
+                style={{ fontFamily: "monospace", fontSize: "0.85rem", resize: "vertical" }}
+                value={profile.reminderTemplates.theyOweMe}
+                onChange={(e) =>
+                  setProfile({
+                    ...profile,
+                    reminderTemplates: { ...profile.reminderTemplates, theyOweMe: e.target.value },
+                  })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="label" style={{ fontWeight: 600, color: "var(--expense)" }}>
+                Template: I Owe Friend (English)
+              </label>
+              <textarea
+                className="input"
+                rows={4}
+                style={{ fontFamily: "monospace", fontSize: "0.85rem", resize: "vertical" }}
+                value={profile.reminderTemplates.iOweThem}
+                onChange={(e) =>
+                  setProfile({
+                    ...profile,
+                    reminderTemplates: { ...profile.reminderTemplates, iOweThem: e.target.value },
+                  })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="label" style={{ fontWeight: 600, color: "var(--primary)" }}>
+                Template: All Settled (English)
+              </label>
+              <textarea
+                className="input"
+                rows={3}
+                style={{ fontFamily: "monospace", fontSize: "0.85rem", resize: "vertical" }}
+                value={profile.reminderTemplates.settled}
+                onChange={(e) =>
+                  setProfile({
+                    ...profile,
+                    reminderTemplates: { ...profile.reminderTemplates, settled: e.target.value },
+                  })
+                }
+              />
+            </div>
+          </div>
+        )}
 
         <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "flex-end" }}>
           <button

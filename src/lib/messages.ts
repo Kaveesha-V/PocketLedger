@@ -6,21 +6,36 @@ export interface ReminderTemplates {
   theyOweMe: string;
   iOweThem: string;
   settled: string;
+  theyOweMeSi: string;
+  iOweThemSi: string;
+  settledSi: string;
 }
 
+export const DEFAULT_TEMPLATES_EN = {
+  theyOweMe: `Hi {friend}, hope you're doing well! Just a quick reminder about the {currency} {amount} from {date}. Whenever you get a chance to send it over, that'd be great. Thanks! — {myName}`,
+  iOweThem: `Hi {friend}, hope you're doing well! Just letting you know that I owe you {currency} {amount} from {date}. I'll transfer it to you as soon as possible. Thanks! — {myName}`,
+  settled: `Hi {friend}, all settled between us for our past transactions. Thanks! — {myName}`,
+};
+
+export const DEFAULT_TEMPLATES_SI = {
+  theyOweMe: `හායි {friend}, කොහොමද ඔයාට?
+පොඩි මතක් කිරීමක් කරන්නයි මැසේජ් එක දැම්මේ — {date} වෙනිදා ගනුදෙනුවට අදාළව රුපියල් {amount} ක මුදලක් ලැබෙන්න තියෙනවා.
+ඔයාට පුළුවන් වෙලාවක ඒක එවන්න පුළුවන්ද? බොහොම ස්තූතියි!
+— {myName}`,
+  iOweThem: `හායි {friend}, කොහොමද ඔයාට?
+මට ඔයාට රුපියල් {amount} ක මුදලක් දෙන්න තියෙනවා ({date} ගනුදෙනුවට අදාළව). මම ඒක ඉක්මනින්ම එවන්නම්. බොහොම ස්තූතියි උදව්වට!
+— {myName}`,
+  settled: `හායි {friend}, අපි දෙන්නා අතර තියෙන සියලුම ගනුදෙනු බේරුම් කරලා අවසන්. බොහොම ස්තූතියි!
+— {myName}`,
+};
+
 export const DEFAULT_TEMPLATES: ReminderTemplates = {
-  theyOweMe: `Hi {friend}, hope you're doing well.
-Just a gentle reminder — you owe me {currency} {amount}.
-Details: {count} transactions, last on {lastDate}.
-Please send it when you can. Thanks!
-— {myName}`,
-
-  iOweThem: `Hi {friend}, I'm noting that I owe you {currency} {amount}.
-I'll pay it back by {date}. Thanks for helping me.
-— {myName}`,
-
-  settled: `Hi {friend}, all settled between us. Thanks!
-— {myName}`,
+  theyOweMe: DEFAULT_TEMPLATES_EN.theyOweMe,
+  iOweThem: DEFAULT_TEMPLATES_EN.iOweThem,
+  settled: DEFAULT_TEMPLATES_EN.settled,
+  theyOweMeSi: DEFAULT_TEMPLATES_SI.theyOweMe,
+  iOweThemSi: DEFAULT_TEMPLATES_SI.iOweThem,
+  settledSi: DEFAULT_TEMPLATES_SI.settled,
 };
 
 export interface TemplateVars {
@@ -44,13 +59,228 @@ export function renderTemplate(template: string, vars: TemplateVars): string {
 }
 
 /**
+ * Sinhala month names
+ */
+const SINHALA_MONTHS = [
+  "ජනවාරි", "පෙබරවාරි", "මාර්තු", "අප්‍රේල්", "මැයි", "ජූනි",
+  "ජූලි", "අගෝස්තු", "සැප්තැම්බර්", "ඔක්තෝබර්", "නොවැම්බර්", "දෙසැම්බර්"
+];
+
+/**
+ * Format a date nicely into Sinhala, e.g. "ඔක්තෝබර් 28"
+ */
+export function formatDateSinhala(date: Date | string | null | undefined): string {
+  if (!date) return "මෑතකදී";
+  const d = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(d.getTime())) return "මෑතකදී";
+  const monthName = SINHALA_MONTHS[d.getMonth()];
+  const day = d.getDate();
+  return `${monthName} ${day}`;
+}
+
+/**
+ * Format a date into friendly English, e.g. "October 28th"
+ */
+export function formatDateEnglishFriendly(date: Date | string | null | undefined): string {
+  if (!date) return "recently";
+  const d = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(d.getTime())) return "recently";
+  const month = d.toLocaleDateString("en-US", { month: "long" });
+  const day = d.getDate();
+  const nth = (n: number) => {
+    if (n > 3 && n < 21) return `${n}th`;
+    switch (n % 10) {
+      case 1: return `${n}st`;
+      case 2: return `${n}nd`;
+      case 3: return `${n}rd`;
+      default: return `${n}th`;
+    }
+  };
+  return `${month} ${nth(day)}`;
+}
+
+/**
+ * Common Sri Lankan first names transliterated into Sinhala
+ */
+const COMMON_NAMES_SI: Record<string, string> = {
+  kaveesha: "කවීෂ",
+  kavinda: "කවින්ද",
+  yasith: "යසිත්",
+  kasun: "කසුන්",
+  nimal: "නිමල්",
+  kamal: "කමල්",
+  chathura: "චතුර",
+  sandun: "සඳුන්",
+  lahiru: "ලහිරු",
+  nuwan: "නුවන්",
+  sahan: "සහන්",
+  dilshan: "දිල්ශාන්",
+  sachin: "සචින්",
+  ruwan: "රුවන්",
+  janaka: "ජනක",
+  anura: "අනුර",
+  pradeep: "ප්‍රදීප්",
+  tharindu: "තරිඳු",
+  shehan: "ශෙහාන්",
+  isuru: "ඉසුරු",
+  hasitha: "හසිත",
+  dhanushka: "ධනුෂ්ක",
+  malith: "මලිත්",
+  chamara: "චාමර",
+  mahesh: "මහේෂ්",
+  roshan: "රොෂාන්",
+  sanjeewa: "සංජීව",
+  niroshan: "නිරෝෂන්",
+  asanka: "අසංක",
+  sampath: "සම්පත්",
+  amila: "අමිල",
+  gayan: "ගයාන්",
+  suranga: "සුරංග",
+  dilan: "දිලාන්",
+  supun: "සුපුන්",
+  pramod: "ප්‍රමෝද්",
+  dinesh: "දිනේෂ්",
+  dinuka: "දිනුක",
+  vimukthi: "විමුක්ති",
+  kavindu: "කවිඳු",
+  kaveen: "කවීන්",
+  navod: "නවෝද්",
+  pasindu: "පසිඳු",
+  charith: "චරිත්",
+  harsha: "හර්ෂ",
+  harshana: "හර්ෂණ",
+  avishka: "අවිශ්ක",
+  bhanuka: "භානුක",
+  danushka: "ධනුෂ්ක",
+  dharshana: "දර්ශන",
+  indika: "ඉන්දික",
+  janith: "ජනිත්",
+  kelum: "කැලුම්",
+  manjula: "මංජුල",
+  nadeesha: "නදීෂ",
+  nilanga: "නිලංග",
+  omesh: "ඔමේෂ්",
+  pasan: "පසන්",
+  praveen: "ප්‍රවීන්",
+  ranil: "රනිල්",
+  ravindu: "රවිඳු",
+  rukshan: "රුක්ෂාන්",
+  sajith: "සජිත්",
+  sameera: "සමීර",
+  sanka: "සංක",
+  shashika: "ශෂික",
+  sudesh: "සුදේශ්",
+  theekshana: "තීක්ෂණ",
+  upul: "උපුල්",
+  vidura: "විදුර",
+  yohan: "යොහාන්",
+  oshada: "ඔෂධ",
+  madushan: "මධුෂාන්",
+  nadeeka: "නදීකා",
+  chathurika: "චතුරිකා",
+  sanduni: "සඳුනි",
+  hiruni: "හිරුනි",
+  oshadi: "ඔෂධී",
+  dilini: "දිලිනි",
+  anuradha: "අනුරාධ",
+  damith: "දමිත්",
+  eranga: "එරංග",
+  kusal: "කුසල්",
+  wanindu: "වනිඳු",
+  pathum: "පැතුම්",
+  dimuth: "දිමුත්",
+  chamika: "චාමික",
+  maheesh: "මහීෂ්",
+  charithra: "චරිත්‍ර",
+  chathuranga: "චතුරංග",
+};
+
+/**
+ * Extract or transliterate a name to its friendly Sinhala representation
+ */
+export function toSinhalaName(name: string): string {
+  if (!name) return "";
+  const firstWord = name.trim().split(" ")[0];
+  // If already contains Sinhala characters
+  if (/[\u0D80-\u0DFF]/.test(firstWord)) {
+    return firstWord;
+  }
+  const lower = firstWord.toLowerCase();
+  if (COMMON_NAMES_SI[lower]) {
+    return COMMON_NAMES_SI[lower];
+  }
+  return firstWord;
+}
+
+/**
+ * Generate a friendly reminder message in Sinhala or English
+ */
+export function generateReminderMessage({
+  friendName,
+  myName,
+  currency = "LKR",
+  net,
+  lastTxDate,
+  language = "si",
+  templates,
+}: {
+  friendName: string;
+  myName: string;
+  currency?: string;
+  net: number;
+  lastTxDate?: string | Date | null;
+  language?: "si" | "en";
+  templates?: Partial<ReminderTemplates> | null;
+}): string {
+  const isSettled = Math.abs(net) < 0.01;
+  const isOwedToMe = net > 0;
+  const num = Math.abs(net);
+
+  if (language === "si") {
+    const friend = toSinhalaName(friendName);
+    const sender = toSinhalaName(myName);
+    const date = formatDateSinhala(lastTxDate);
+    const amount = num.toFixed(2);
+
+    const tpl = isSettled
+      ? (templates?.settledSi ?? DEFAULT_TEMPLATES_SI.settled)
+      : isOwedToMe
+      ? (templates?.theyOweMeSi ?? DEFAULT_TEMPLATES_SI.theyOweMe)
+      : (templates?.iOweThemSi ?? DEFAULT_TEMPLATES_SI.iOweThem);
+
+    return renderTemplate(tpl, {
+      friend,
+      currency: "රු.",
+      amount,
+      date,
+      lastDate: date,
+      myName: sender,
+    });
+  } else {
+    const friend = friendName.trim().split(" ")[0] || friendName;
+    const sender = myName.trim().split(" ")[0] || myName;
+    const date = formatDateEnglishFriendly(lastTxDate);
+    const amount = num % 1 === 0 ? num.toFixed(0) : num.toFixed(2);
+
+    const tpl = isSettled
+      ? (templates?.settled ?? DEFAULT_TEMPLATES_EN.settled)
+      : isOwedToMe
+      ? (templates?.theyOweMe ?? DEFAULT_TEMPLATES_EN.theyOweMe)
+      : (templates?.iOweThem ?? DEFAULT_TEMPLATES_EN.iOweThem);
+
+    return renderTemplate(tpl, {
+      friend,
+      currency,
+      amount,
+      date,
+      lastDate: date,
+      myName: sender,
+    });
+  }
+}
+
+/**
  * Normalize any phone number into an international E.164-compatible digit string without '+'.
- * Handles:
- *  - Sri Lankan local numbers starting with 0: "0769055019" -> "94769055019"
- *  - Numbers with leading double zeros: "0094769055019" -> "94769055019"
- *  - Numbers with '+' prefix: "+94 76 905 5019" -> "94769055019"
- *  - 9-digit numbers missing leading 0 or country code: "769055019" -> "94769055019"
- *  - Other international numbers: "+1 555 234 5678" -> "15552345678"
  */
 export function normalizePhoneNumber(phone: string, defaultCountryCode = "94"): string {
   if (!phone) return "";
@@ -128,6 +358,9 @@ export function parseTemplates(json: string | null | undefined): ReminderTemplat
       theyOweMe: parsed.theyOweMe ?? DEFAULT_TEMPLATES.theyOweMe,
       iOweThem: parsed.iOweThem ?? DEFAULT_TEMPLATES.iOweThem,
       settled: parsed.settled ?? DEFAULT_TEMPLATES.settled,
+      theyOweMeSi: parsed.theyOweMeSi ?? DEFAULT_TEMPLATES.theyOweMeSi,
+      iOweThemSi: parsed.iOweThemSi ?? DEFAULT_TEMPLATES.iOweThemSi,
+      settledSi: parsed.settledSi ?? DEFAULT_TEMPLATES.settledSi,
     };
   } catch {
     return DEFAULT_TEMPLATES;
