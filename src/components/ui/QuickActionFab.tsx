@@ -173,12 +173,17 @@ export function QuickActionFab() {
         }
         @media (max-width: 1023px) {
           .fab-speed-dial-btn {
-            bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)) !important;
-            right: 1.25rem !important;
+            bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)) !important;
+            right: 1rem !important;
           }
           .fab-speed-dial-menu {
-            bottom: calc(5.5rem + 3.5rem + 0.75rem + env(safe-area-inset-bottom, 0px)) !important;
-            right: 1.25rem !important;
+            bottom: calc(4.75rem + 3.5rem + 0.625rem + env(safe-area-inset-bottom, 0px)) !important;
+            right: 1rem !important;
+          }
+        }
+        @media (max-width: 380px) {
+          .fab-speed-dial-menu a {
+            min-width: 240px !important;
           }
         }
       `}</style>
