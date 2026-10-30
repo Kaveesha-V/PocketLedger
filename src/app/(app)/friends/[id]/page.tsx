@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { formatCurrency, formatDate, initials, stringToHue } from "@/lib/format";
-import { buildWhatsappUrl, formatDisplayPhone, parseTemplates, renderTemplate } from "@/lib/messages";
+import {
+  buildWhatsappUrl,
+  formatDisplayPhone,
+  parseTemplates,
+  generateReminderMessage,
+} from "@/lib/messages";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import {
   ChevronLeft,
@@ -23,6 +29,8 @@ import {
   Send,
   Calendar,
   Handshake,
+  Globe,
+  RefreshCw,
 } from "lucide-react";
 
 type LedgerDirection = "I_GAVE" | "I_BORROWED" | "THEY_REPAID" | "I_REPAID";
@@ -559,8 +567,10 @@ function ReminderPanel({
   onOpenEdit: () => void;
   onPhoneUpdated: () => void;
 }) {
+  const { data: session } = useSession();
   const currency = "LKR";
   const [channel, setChannel] = useState<"whatsapp" | "email">("whatsapp");
+  const [language, setLanguage] = useState<"si" | "en">("si");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState<{ text: string; type: "success" | "error" } | null>(null);
@@ -569,21 +579,55 @@ function ReminderPanel({
   const [savingInlinePhone, setSavingInlinePhone] = useState(false);
 
   useEffect(() => {
-    const templates = parseTemplates(null);
-    const net = friend?.balance?.net ?? 0;
-    const templateKey = Math.abs(net) < 0.01 ? "settled" : net > 0 ? "theyOweMe" : "iOweThem";
-    const rendered = renderTemplate(templates[templateKey], {
-      friend: friend.name,
+    const saved = localStorage.getItem("pl_reminder_lang");
+    if (saved === "si" || saved === "en") {
+      setLanguage(saved);
+    }
+  }, []);
+
+  const lastTx = friend.timeline && friend.timeline.length > 0 ? friend.timeline[friend.timeline.length - 1] : null;
+  const lastTxDate = lastTx ? lastTx.date : (friend as any).lastActivity || new Date().toISOString();
+  const myName = session?.user?.name || "Kaveesha";
+
+  useEffect(() => {
+    const generated = generateReminderMessage({
+      friendName: friend.name,
+      myName,
       currency,
-      amount: formatCurrency(Math.abs(net), currency),
-      count: (friend.balance?.timesGave ?? 0) + (friend.balance?.timesBorrowed ?? 0),
-      lastDate: friend.timeline[friend.timeline.length - 1]?.date
-        ? formatDate(friend.timeline[friend.timeline.length - 1].date, "short")
-        : "—",
-      myName: "Me",
+      net: friend?.balance?.net ?? 0,
+      lastTxDate,
+      language,
     });
-    setMessage(rendered);
-  }, [friend]);
+    setMessage(generated);
+  }, [friend, myName, language]);
+
+  function handleLanguageSwitch(lang: "si" | "en") {
+    setLanguage(lang);
+    localStorage.setItem("pl_reminder_lang", lang);
+    const generated = generateReminderMessage({
+      friendName: friend.name,
+      myName,
+      currency,
+      net: friend?.balance?.net ?? 0,
+      lastTxDate,
+      language: lang,
+    });
+    setMessage(generated);
+  }
+
+  function handleResetMessage() {
+    const generated = generateReminderMessage({
+      friendName: friend.name,
+      myName,
+      currency,
+      net: friend?.balance?.net ?? 0,
+      lastTxDate,
+      language,
+    });
+    setMessage(generated);
+    setFeedback({ text: "Message reset to template with database values", type: "success" });
+    setTimeout(() => setFeedback(null), 2500);
+  }
 
   async function saveInlinePhone() {
     if (!inlinePhone.trim()) return;
@@ -760,6 +804,49 @@ function ReminderPanel({
         </div>
       )}
 
+      {/* Language Switcher bar */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "0.625rem",
+          flexWrap: "wrap",
+          gap: "0.5rem",
+        }}
+      >
+        <div style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem", fontSize: "0.8125rem", color: "var(--muted)", fontWeight: 500 }}>
+          <Globe size={14} /> Message Language:
+        </div>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+          <button
+            type="button"
+            className={`btn btn-sm ${language === "si" ? "btn-primary" : "btn-ghost"}`}
+            style={{ padding: "0.2rem 0.65rem", fontSize: "0.8rem", minHeight: "28px" }}
+            onClick={() => handleLanguageSwitch("si")}
+          >
+            සිංහල (Sinhala)
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${language === "en" ? "btn-primary" : "btn-ghost"}`}
+            style={{ padding: "0.2rem 0.65rem", fontSize: "0.8rem", minHeight: "28px" }}
+            onClick={() => handleLanguageSwitch("en")}
+          >
+            English
+          </button>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            style={{ padding: "0.2rem 0.45rem", minHeight: "28px", color: "var(--muted)" }}
+            onClick={handleResetMessage}
+            title="Re-generate template with database values"
+          >
+            <RefreshCw size={13} />
+          </button>
+        </div>
+      </div>
+
       <textarea
         className="input"
         rows={5}
@@ -767,6 +854,9 @@ function ReminderPanel({
         onChange={(e) => setMessage(e.target.value)}
         style={{ resize: "vertical", fontFamily: "Inter, sans-serif", fontSize: "0.875rem", lineHeight: 1.6 }}
       />
+      <p style={{ margin: "0.35rem 0 0", fontSize: "0.75rem", color: "var(--muted)" }}>
+        Friend name, amount & transaction date are fetched from the database. You can edit this text freely before sending.
+      </p>
       {feedback && (
         <p style={{ fontSize: "0.875rem", color: feedback.type === "success" ? "var(--income)" : "var(--expense)", marginTop: "0.5rem", display: "flex", alignItems: "center", gap: "4px" }}>
           {feedback.type === "success" ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
