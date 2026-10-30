@@ -742,6 +742,54 @@ tbody tr {
   display: block;
 }
 
+/* Budget Header & Month/Date Selector */
+.budget-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.budget-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.budget-date-selector-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.75rem;
+  height: 42px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color var(--transition);
+}
+.budget-date-selector-card:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+.budget-month-select {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.875rem;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  width: auto;
+}
+.budget-month-select option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* Budget Filters & Search Bar */
 .budget-filters-bar {
   display: flex;
   gap: 0.75rem;
@@ -749,36 +797,107 @@ tbody tr {
   flex-wrap: wrap;
   align-items: center;
 }
+.budget-search-wrapper {
+  position: relative;
+  flex: 1 1 220px;
+  max-width: 280px;
+  min-width: 0;
+}
 .budget-search-input {
-  flex: 1 1 200px;
-  max-width: 260px;
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  padding-left: 2.35rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  font-size: 0.9375rem !important;
 }
 .budget-filter-tabs {
   display: flex;
   gap: 0.375rem;
 }
+
+/* Form fields for Mobile Budget Entry */
+.budget-form-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+  margin-bottom: 0.75rem;
+}
+
 @media (max-width: 640px) {
+  .budget-header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  .budget-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .budget-date-selector-card {
+    width: 100%;
+    justify-content: space-between;
+    height: 42px;
+  }
+  .budget-month-select {
+    width: 100%;
+    font-size: 0.9375rem;
+  }
   .budget-filters-bar {
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem;
   }
+  .budget-search-wrapper {
+    max-width: 100% !important;
+    width: 100% !important;
+    flex: none !important;
+  }
   .budget-search-input {
-    max-width: 100%;
-    width: 100%;
+    flex: none !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    max-width: 100% !important;
+    width: 100% !important;
   }
   .budget-filter-tabs {
     width: 100%;
+  }
+  .budget-form-field-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.625rem !important;
   }
 }
 
 /* Date input styling to prevent iOS WebKit overlap & intrinsic expansion */
 input[type="date"].input,
 input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
   min-width: 0 !important;
   max-width: 100% !important;
   width: 100% !important;
+  height: 42px !important;
   box-sizing: border-box !important;
+  font-size: 16px !important;
+  color: var(--text) !important;
+  background-color: var(--surface) !important;
+}
+
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left !important;
+  min-height: 1.4em !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.65);
+  opacity: 0.85;
+  margin-right: 2px;
 }
 
 /* Responsive card padding helper */
