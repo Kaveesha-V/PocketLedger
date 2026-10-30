@@ -172,14 +172,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Quick Action Buttons (Useful Shortcuts) ───────────────── */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-          gap: "0.75rem",
-          marginBottom: "1.5rem",
-        }}
-      >
+      <div className="dashboard-actions-grid">
         <Link
           href="/ledger/new?direction=I_GAVE"
           className="card card-interactive"
@@ -270,14 +263,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Key Metrics Cards ─────────────────────────────────────── */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-          gap: "1rem",
-          marginBottom: "1.5rem",
-        }}
-      >
+      <div className="dashboard-metrics-grid">
         <div className="card" style={{ padding: "1.25rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
