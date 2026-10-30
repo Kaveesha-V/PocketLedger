@@ -6,6 +6,7 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from "recharts";
 import { formatCurrency } from "@/lib/format";
+import { FileText, BarChart3, Download, Check, AlertCircle } from "lucide-react";
 
 interface ReportData {
   month: string;
@@ -123,10 +124,10 @@ export default function ReportsPage() {
       doc.text("PocketLedger — Smart Budget & Friend Money Tracker", 14, 285);
 
       doc.save(`PocketLedger_Report_${month}.pdf`);
-      setExportNotice("PDF report downloaded ✓");
+      setExportNotice("PDF report downloaded successfully");
       setTimeout(() => setExportNotice(""), 3000);
     } catch {
-      setExportNotice("⚠️ Error generating PDF. Please try again.");
+      setExportNotice("Error generating PDF. Please try again.");
     }
   }
 
@@ -240,7 +241,7 @@ export default function ReportsPage() {
               className="btn btn-ghost btn-sm"
               onClick={exportPDF}
             >
-              📄 Export PDF
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}><FileText size={15} /> Export PDF</span>
             </button>
             <a
               href={`/api/budget/export?month=${month}&format=xlsx`}
@@ -248,7 +249,7 @@ export default function ReportsPage() {
               className="btn btn-ghost btn-sm"
               style={{ textDecoration: "none" }}
             >
-              📊 Export Excel
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}><BarChart3 size={15} /> Export Excel</span>
             </a>
             <a
               href={`/api/budget/export?month=${month}&format=csv`}
@@ -256,10 +257,20 @@ export default function ReportsPage() {
               className="btn btn-ghost btn-sm"
               style={{ textDecoration: "none" }}
             >
-              📋 Export CSV
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}><Download size={15} /> Export CSV</span>
             </a>
             {exportNotice && (
-              <span style={{ fontSize: "0.85rem", color: exportNotice.startsWith("⚠️") ? "var(--expense)" : "var(--income)", fontWeight: 500 }}>
+              <span
+                style={{
+                  fontSize: "0.85rem",
+                  color: exportNotice.toLowerCase().includes("error") ? "var(--expense)" : "var(--income)",
+                  fontWeight: 500,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
+              >
+                {exportNotice.toLowerCase().includes("error") ? <AlertCircle size={14} /> : <Check size={14} />}
                 {exportNotice}
               </span>
             )}

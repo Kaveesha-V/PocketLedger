@@ -4,6 +4,15 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/format";
+import {
+  Users,
+  ArrowUpRight,
+  ArrowDownLeft,
+  CheckCircle2,
+  RotateCcw,
+  ChevronLeft,
+  Plus,
+} from "lucide-react";
 
 interface Friend {
   id: string;
@@ -118,7 +127,7 @@ function NewLedgerTransactionForm() {
     <div className="page-container" style={{ maxWidth: "680px" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <Link href="/friends" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "0.9rem" }}>
-          ← Back to Friends
+          <ChevronLeft size={16} style={{ display: "inline", verticalAlign: "-3px" }} /> Back to Friends
         </Link>
         <h1 style={{ marginTop: "0.5rem" }}>Record Lend / Borrow</h1>
       </div>
@@ -129,7 +138,7 @@ function NewLedgerTransactionForm() {
         </div>
       ) : friends.length === 0 ? (
         <div className="card" style={{ textAlign: "center", padding: "3rem" }}>
-          <p style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>👥</p>
+          <div style={{ width: "56px", height: "56px", margin: "0 auto 0.5rem", borderRadius: "16px", background: "color-mix(in srgb, var(--primary) 15%, transparent)", color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center" }}><Users size={28} /></div>
           <h3>No friends yet</h3>
           <p style={{ color: "var(--muted)", marginBottom: "1rem" }}>
             Add a friend first before recording money transactions.
@@ -176,7 +185,7 @@ function NewLedgerTransactionForm() {
                 }}
                 onClick={() => setDirection("I_GAVE")}
               >
-                💸 I Gave (Lent)
+                <ArrowUpRight size={16} /> I Gave (Lent)
               </button>
               <button
                 type="button"
@@ -188,7 +197,7 @@ function NewLedgerTransactionForm() {
                 }}
                 onClick={() => setDirection("I_BORROWED")}
               >
-                🤲 I Borrowed
+                <ArrowDownLeft size={16} /> I Borrowed
               </button>
               <button
                 type="button"
@@ -200,7 +209,7 @@ function NewLedgerTransactionForm() {
                 }}
                 onClick={() => setDirection("THEY_REPAID")}
               >
-                ✅ They Paid Me
+                <CheckCircle2 size={16} /> They Paid Me
               </button>
               <button
                 type="button"
@@ -213,7 +222,7 @@ function NewLedgerTransactionForm() {
                 }}
                 onClick={() => setDirection("I_REPAID")}
               >
-                🤝 I Paid Them
+                <RotateCcw size={16} /> I Paid Them
               </button>
             </div>
 
@@ -244,7 +253,7 @@ function NewLedgerTransactionForm() {
                     : "var(--text)",
               }}
             >
-              <span>{direction === "I_GAVE" ? "💸" : direction === "I_BORROWED" ? "🤲" : direction === "THEY_REPAID" ? "✅" : "🤝"}</span>
+              <span style={{ display: "flex", alignItems: "center" }}>{direction === "I_GAVE" ? <ArrowUpRight size={16} /> : direction === "I_BORROWED" ? <ArrowDownLeft size={16} /> : direction === "THEY_REPAID" ? <CheckCircle2 size={16} /> : <RotateCcw size={16} />}</span>
               <span>
                 {direction === "I_GAVE" && "You gave money to this friend. This adds to what they owe you."}
                 {direction === "I_BORROWED" && "You borrowed money from this friend. This adds to what you owe them."}
@@ -327,7 +336,9 @@ function NewLedgerTransactionForm() {
                     you will owe them {formatCurrency(Math.abs(newNet))}
                   </span>
                 ) : (
-                  <span style={{ color: "var(--primary)" }}>will be fully settled ✅</span>
+                  <span style={{ color: "var(--primary)", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                    <CheckCircle2 size={14} /> will be fully settled
+                  </span>
                 )}
               </p>
             </div>

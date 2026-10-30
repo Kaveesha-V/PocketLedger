@@ -5,6 +5,7 @@ import Link from "next/link";
 import { formatCurrency, initials, stringToHue, formatDate } from "@/lib/format";
 import { formatDisplayPhone } from "@/lib/messages";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { Users, Plus, Search, Phone, Trash2, ArrowUpRight, ArrowDownLeft, CheckCircle2 } from "lucide-react";
 
 interface FriendSummary {
   id: string;
@@ -192,11 +193,11 @@ export default function FriendsPage() {
     return true;
   });
 
-  const FILTERS: { id: Filter; label: string }[] = [
+  const FILTERS: { id: Filter; label: string; icon?: React.ReactNode }[] = [
     { id: "all", label: "All" },
-    { id: "owe-me", label: "🟢 They owe me" },
-    { id: "i-owe", label: "🔴 I owe them" },
-    { id: "settled", label: "✅ Settled" },
+    { id: "owe-me", label: "They owe me", icon: <ArrowDownLeft size={14} style={{ color: "var(--income)", marginRight: 4 }} /> },
+    { id: "i-owe", label: "I owe them", icon: <ArrowUpRight size={14} style={{ color: "var(--expense)", marginRight: 4 }} /> },
+    { id: "settled", label: "Settled", icon: <CheckCircle2 size={14} style={{ color: "var(--muted)", marginRight: 4 }} /> },
   ];
 
   return (
@@ -209,7 +210,7 @@ export default function FriendsPage() {
           </p>
         </div>
         <button id="btn-open-add-friend" className="btn btn-primary" onClick={() => setShowModal(true)}>
-          + Add Friend
+          <Plus size={16} /> Add Friend
         </button>
       </div>
 
@@ -218,7 +219,7 @@ export default function FriendsPage() {
         <input
           className="input"
           style={{ flex: "1 1 200px", maxWidth: "280px" }}
-          placeholder="🔍 Search friends…"
+          placeholder="Search friends…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -235,7 +236,7 @@ export default function FriendsPage() {
               }}
               onClick={() => setFilter(fl.id)}
             >
-              {fl.label}
+              <span style={{ display: "inline-flex", alignItems: "center" }}>{fl.icon}{fl.label}</span>
             </button>
           ))}
         </div>
@@ -249,7 +250,7 @@ export default function FriendsPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div style={{ textAlign: "center", padding: "4rem 2rem", color: "var(--muted)", background: "var(--surface)", borderRadius: "var(--radius)", border: "1px dashed var(--border)" }}>
-          <div style={{ fontSize: "3rem", marginBottom: "0.75rem" }}>👥</div>
+          <div style={{ width: "56px", height: "56px", margin: "0 auto 0.75rem", borderRadius: "16px", background: "color-mix(in srgb, var(--primary) 15%, transparent)", color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center" }}><Users size={28} /></div>
           <h3 style={{ marginBottom: "0.5rem" }}>No friends found</h3>
           <p style={{ marginBottom: "1.25rem" }}>
             {search ? "No friends match your search." : "Add friends to start tracking boarding money, meals, and loans."}
@@ -264,7 +265,7 @@ export default function FriendsPage() {
             const hue = stringToHue(f.name);
             const net = f.balance.net;
             const netColor = net > 0.01 ? "var(--income)" : net < -0.01 ? "var(--expense)" : "var(--muted)";
-            const netLabel = net > 0.01 ? `Owes you ${formatCurrency(net, currency)}` : net < -0.01 ? `You owe ${formatCurrency(Math.abs(net), currency)}` : "Settled ✅";
+            const netLabel = net > 0.01 ? `Owes you ${formatCurrency(net, currency)}` : net < -0.01 ? `You owe ${formatCurrency(Math.abs(net), currency)}` : "Settled";
             return (
               <div
                 key={f.id}
@@ -309,7 +310,7 @@ export default function FriendsPage() {
                     </p>
                     {f.phone && (
                       <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: "0.15rem 0 0" }}>
-                        📱 {formatDisplayPhone(f.phone)}
+                        <Phone size={13} style={{ display: "inline", verticalAlign: "-2px", marginRight: "3px" }} /> {formatDisplayPhone(f.phone)}
                       </p>
                     )}
                     <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: "0.15rem 0 0" }}>
@@ -358,10 +359,7 @@ export default function FriendsPage() {
                         setDeleteTarget(f);
                       }}
                       title="Remove friend"
-                      aria-label={`Remove ${f.name}`}
-                    >
-                      🗑️
-                    </button>
+                      aria-label={`Remove ${f.name}`}><Trash2 size={15} /></button>
                   </div>
                 </div>
               </div>
@@ -384,7 +382,7 @@ export default function FriendsPage() {
         message={`Are you sure you want to remove ${deleteTarget?.name} from your active friends list? All past transactions will be archived.`}
         confirmText="Remove Friend"
         variant="danger"
-        icon="🗑️"
+        icon={<Trash2 size={22} style={{ color: "var(--expense)" }} />}
         loading={deleting}
         onConfirm={handleDeleteFriend}
         onCancel={() => setDeleteTarget(null)}

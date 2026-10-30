@@ -85,7 +85,7 @@ export function calcBalance(transactions: LedgerTx[]): FriendBalance {
  * Determine the balance status label and direction.
  */
 export function balanceLabel(net: number, currency: string, friendName: string): string {
-  if (Math.abs(net) < 0.01) return "All settled ✅";
+  if (Math.abs(net) < 0.01) return "All settled";
   if (net > 0) return `${friendName} owes you`;
   return `You owe ${friendName}`;
 }

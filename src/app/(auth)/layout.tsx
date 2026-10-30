@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Wallet } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Sign Up — PocketLedger",
@@ -33,7 +34,21 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             textDecoration: "none",
           }}
         >
-          <span style={{ fontSize: "1.5rem" }}>💰</span>
+          <span
+            style={{
+              width: "32px",
+              height: "32px",
+              borderRadius: "8px",
+              background: "linear-gradient(135deg, var(--primary), var(--accent))",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#ffffff",
+              boxShadow: "0 2px 8px rgba(139, 92, 246, 0.4)",
+            }}
+          >
+            <Wallet size={18} />
+          </span>
           <span
             style={{
               fontFamily: "Poppins, sans-serif",

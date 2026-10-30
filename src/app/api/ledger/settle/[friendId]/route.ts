@@ -47,5 +47,5 @@ export async function POST(req: Request, { params }: { params: Promise<{ friendI
     data: { settled: true },
   });
 
-  return NextResponse.json(ok({ tx, message: "All settled ✅" }));
+  return NextResponse.json(ok({ tx, message: "All settled" }));
 }

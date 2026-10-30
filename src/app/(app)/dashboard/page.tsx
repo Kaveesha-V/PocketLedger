@@ -17,6 +17,22 @@ import {
 } from "recharts";
 import { formatCurrency, formatDate, initials, stringToHue } from "@/lib/format";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import {
+  ArrowUpRight,
+  ArrowDownLeft,
+  Plus,
+  Users,
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+  Coins,
+  AlertCircle,
+  Calendar,
+  CheckCircle2,
+  ChevronRight,
+  Sparkles,
+  ArrowRight,
+} from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -158,7 +174,7 @@ export default function DashboardPage() {
       >
         <div>
           <h1 style={{ fontSize: "1.625rem", marginBottom: "0.25rem" }}>
-            {greeting}, {name} 👋
+            {greeting}, {name}
           </h1>
           <p style={{ color: "var(--muted)", fontSize: "0.875rem", margin: 0 }}>
             {now.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" })}
@@ -188,7 +204,7 @@ export default function DashboardPage() {
             borderRadius: "var(--radius)",
           }}
         >
-          <span style={{ fontSize: "1.5rem" }}>💸</span>
+          <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: "color-mix(in srgb, var(--income) 15%, transparent)", color: "var(--income)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><ArrowUpRight size={20} /></div>
           <div>
             <p style={{ fontWeight: 600, fontSize: "0.9rem", margin: 0 }}>Lend Money</p>
             <p style={{ fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>I gave to friend</p>
@@ -210,7 +226,7 @@ export default function DashboardPage() {
             borderRadius: "var(--radius)",
           }}
         >
-          <span style={{ fontSize: "1.5rem" }}>🤲</span>
+          <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: "color-mix(in srgb, var(--expense) 15%, transparent)", color: "var(--expense)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><ArrowDownLeft size={20} /></div>
           <div>
             <p style={{ fontWeight: 600, fontSize: "0.9rem", margin: 0 }}>Borrow Money</p>
             <p style={{ fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>I borrowed</p>
@@ -232,7 +248,7 @@ export default function DashboardPage() {
             borderRadius: "var(--radius)",
           }}
         >
-          <span style={{ fontSize: "1.5rem" }}>➕</span>
+          <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: "color-mix(in srgb, var(--primary) 15%, transparent)", color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Plus size={20} /></div>
           <div>
             <p style={{ fontWeight: 600, fontSize: "0.9rem", margin: 0 }}>Add Expense</p>
             <p style={{ fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>Daily budget log</p>
@@ -254,7 +270,7 @@ export default function DashboardPage() {
             borderRadius: "var(--radius)",
           }}
         >
-          <span style={{ fontSize: "1.5rem" }}>👥</span>
+          <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: "color-mix(in srgb, var(--accent) 15%, transparent)", color: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Users size={20} /></div>
           <div>
             <p style={{ fontWeight: 600, fontSize: "0.9rem", margin: 0 }}>Friends</p>
             <p style={{ fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>View all friends</p>
@@ -280,7 +296,7 @@ export default function DashboardPage() {
                 {fmt(data?.budget.balance ?? 0)}
               </p>
             </div>
-            <span style={{ fontSize: "1.75rem" }}>💰</span>
+            <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "color-mix(in srgb, var(--primary) 15%, transparent)", color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Wallet size={20} /></div>
           </div>
         </div>
 
@@ -292,7 +308,7 @@ export default function DashboardPage() {
                 +{fmt(data?.budget.totalIncome ?? 0)}
               </p>
             </div>
-            <span style={{ fontSize: "1.75rem" }}>📥</span>
+            <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "color-mix(in srgb, var(--income) 15%, transparent)", color: "var(--income)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><TrendingUp size={20} /></div>
           </div>
         </div>
 
@@ -304,7 +320,7 @@ export default function DashboardPage() {
                 -{fmt(data?.budget.totalExpense ?? 0)}
               </p>
             </div>
-            <span style={{ fontSize: "1.75rem" }}>📤</span>
+            <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "color-mix(in srgb, var(--expense) 15%, transparent)", color: "var(--expense)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><TrendingDown size={20} /></div>
           </div>
         </div>
 
@@ -324,7 +340,7 @@ export default function DashboardPage() {
                 {fmt(netFriendBalance)}
               </p>
             </div>
-            <span style={{ fontSize: "1.75rem" }}>🤝</span>
+            <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "color-mix(in srgb, var(--accent) 15%, transparent)", color: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Coins size={20} /></div>
           </div>
         </div>
       </div>
@@ -341,9 +357,7 @@ export default function DashboardPage() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
-              <p style={{ color: "var(--income)", fontWeight: 600, fontSize: "0.875rem", margin: 0 }}>
-                🟢 Friends Owe You
-              </p>
+              <p style={{ color: "var(--income)", fontWeight: 600, fontSize: "0.875rem", margin: 0, display: "flex", alignItems: "center", gap: "0.4rem" }}><ArrowUpRight size={16} /> Friends Owe You</p>
               <p className="money" style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--income)", margin: "0.25rem 0" }}>
                 {fmt(data?.friends.totalOwedToMe ?? 0)}
               </p>
@@ -367,9 +381,7 @@ export default function DashboardPage() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
-              <p style={{ color: "var(--expense)", fontWeight: 600, fontSize: "0.875rem", margin: 0 }}>
-                🔴 You Owe Friends
-              </p>
+              <p style={{ color: "var(--expense)", fontWeight: 600, fontSize: "0.875rem", margin: 0, display: "flex", alignItems: "center", gap: "0.4rem" }}><ArrowDownLeft size={16} /> You Owe Friends</p>
               <p className="money" style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--expense)", margin: "0.25rem 0" }}>
                 {fmt(data?.friends.totalIOwe ?? 0)}
               </p>
@@ -399,7 +411,7 @@ export default function DashboardPage() {
               }}
             >
               <h3 style={{ fontSize: "1rem", margin: "0 0 0.75rem", color: "var(--expense)" }}>
-                ⚠️ Overdue Reminders ({data?.overdue.length})
+                Overdue Reminders ({data?.overdue.length})
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {data?.overdue.map((o) => (
@@ -435,7 +447,7 @@ export default function DashboardPage() {
 
             {(data?.friends.top5?.length ?? 0) === 0 ? (
               <div style={{ textAlign: "center", padding: "2rem 1rem", color: "var(--muted)" }}>
-                <p style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🤝</p>
+                <div style={{ width: "48px", height: "48px", margin: "0 auto 0.5rem", borderRadius: "50%", background: "color-mix(in srgb, var(--income) 15%, transparent)", color: "var(--income)", display: "flex", alignItems: "center", justifyContent: "center" }}><CheckCircle2 size={24} /></div>
                 <p style={{ fontWeight: 600, margin: "0 0 0.25rem", color: "var(--text)" }}>All settled up!</p>
                 <p style={{ fontSize: "0.8125rem", margin: "0 0 1rem" }}>No friends currently owe you, and you owe no one.</p>
                 <Link href="/ledger/new" className="btn btn-sm btn-primary">
@@ -513,7 +525,7 @@ export default function DashboardPage() {
 
             {((data?.recentLedger?.length ?? 0) === 0 && (data?.recentActivity?.length ?? 0) === 0) ? (
               <div style={{ textAlign: "center", padding: "2rem 1rem", color: "var(--muted)" }}>
-                <p style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>📊</p>
+                <div style={{ width: "48px", height: "48px", margin: "0 auto 0.5rem", borderRadius: "50%", background: "color-mix(in srgb, var(--primary) 15%, transparent)", color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center" }}><TrendingUp size={24} /></div>
                 <p style={{ fontWeight: 600, margin: "0 0 0.25rem", color: "var(--text)" }}>No recent activity</p>
                 <p style={{ fontSize: "0.8125rem", margin: "0 0 1rem" }}>Start logging your daily expenses or friend transactions.</p>
                 <Link href="/budget" className="btn btn-sm btn-primary">
@@ -537,7 +549,7 @@ export default function DashboardPage() {
                       }}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
-                        <span style={{ fontSize: "1.2rem" }}>🤝</span>
+                        <Coins size={16} style={{ color: "var(--accent)" }} />
                         <div>
                           <p style={{ fontWeight: 500, fontSize: "0.875rem", margin: 0 }}>
                             {meta.label} ({l.friendName})
@@ -567,7 +579,7 @@ export default function DashboardPage() {
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
-                      <span style={{ fontSize: "1.2rem" }}>{b.entryType === "INCOME" ? "📥" : "📤"}</span>
+                      {b.entryType === "INCOME" ? <TrendingUp size={16} style={{ color: "var(--income)" }} /> : <TrendingDown size={16} style={{ color: "var(--expense)" }} />}
                       <div>
                         <p style={{ fontWeight: 500, fontSize: "0.875rem", margin: 0 }}>{b.title}</p>
                         <p style={{ fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>

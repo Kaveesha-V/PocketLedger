@@ -61,7 +61,7 @@ function reminderHtml(opts: {
   <div style="max-width:580px;margin:32px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(15,35,29,0.10);">
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f9d78,#0a6e54);padding:32px 32px 24px;text-align:center;">
-      <h1 style="font-family:Poppins,sans-serif;color:#fff;margin:0;font-size:24px;">💰 PocketLedger</h1>
+      <h1 style="font-family:Poppins,sans-serif;color:#fff;margin:0;font-size:24px;">PocketLedger</h1>
       <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:14px;">Money reminder from ${senderName}</p>
     </div>
     <!-- Balance highlight -->
@@ -133,7 +133,7 @@ export async function sendOtpEmail(to: string, otp: string): Promise<{ success: 
       html: `
       <div style="max-width:480px;margin:32px auto;font-family:Inter,sans-serif;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(15,35,29,0.10);">
         <div style="background:linear-gradient(135deg,#0f9d78,#0a6e54);padding:32px;text-align:center;">
-          <h1 style="font-family:Poppins,sans-serif;color:#fff;margin:0;font-size:22px;">💰 PocketLedger</h1>
+          <h1 style="font-family:Poppins,sans-serif;color:#fff;margin:0;font-size:22px;">PocketLedger</h1>
           <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:14px;">Email Verification</p>
         </div>
         <div style="padding:32px;text-align:center;">
@@ -166,19 +166,19 @@ export async function sendWelcomeEmail(to: string, name: string) {
     await resend.emails.send({
       from: FROM,
       to,
-      subject: "Welcome to PocketLedger 🎉",
+      subject: "Welcome to PocketLedger",
       html: `
       <div style="max-width:520px;margin:32px auto;font-family:Inter,sans-serif;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(15,35,29,0.10);">
         <div style="background:linear-gradient(135deg,#0f9d78,#0a6e54);padding:32px;text-align:center;">
-          <h1 style="font-family:Poppins,sans-serif;color:#fff;margin:0;">Welcome, ${name}! 🌿</h1>
+          <h1 style="font-family:Poppins,sans-serif;color:#fff;margin:0;">Welcome, ${name}!</h1>
         </div>
         <div style="padding:32px;">
           <p>You're all set on <strong>PocketLedger</strong> — your personal budget & money tracker.</p>
           <p>Get started in 3 steps:</p>
           <ol style="padding-left:20px;line-height:2;">
-            <li>📊 <strong>Add your first budget entry</strong></li>
-            <li>👥 <strong>Add a friend</strong></li>
-            <li>💸 <strong>Record your first lend/borrow</strong></li>
+            <li><strong>Add your first budget entry</strong></li>
+            <li><strong>Add a friend</strong></li>
+            <li><strong>Record your first lend/borrow</strong></li>
           </ol>
         </div>
       </div>`,

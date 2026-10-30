@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { formatDate } from "@/lib/format";
+import { Bell, Mail, MessageCircle } from "lucide-react";
 
 interface ReminderLog {
   id: string;
@@ -29,13 +30,27 @@ export default function RemindersPage() {
 
       {loading ? (
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          {[1,2,3].map(i => <div key={i} className="skeleton" style={{ height: "72px" }} />)}
+          {[1,2,3].map(i => <div key={i} className="skeleton" style={{ height: "72px", borderRadius: "var(--radius)" }} />)}
         </div>
       ) : logs.length === 0 ? (
         <div style={{ textAlign: "center", padding: "4rem 2rem", color: "var(--muted)" }}>
-          <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>💬</div>
+          <div
+            style={{
+              width: "56px",
+              height: "56px",
+              margin: "0 auto 1rem",
+              borderRadius: "16px",
+              background: "color-mix(in srgb, var(--primary) 15%, transparent)",
+              color: "var(--primary)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Bell size={28} />
+          </div>
           <h3 style={{ marginBottom: "0.5rem" }}>No reminders sent yet</h3>
-          <p>Go to a friend's page and send your first reminder.</p>
+          <p>Go to a friend&apos;s page and send your first reminder.</p>
         </div>
       ) : (
         <div className="table-wrap">
@@ -58,7 +73,15 @@ export default function RemindersPage() {
                   <td style={{ fontWeight: 500 }}>{log.friend.name}</td>
                   <td>
                     <span className={`badge ${log.channel === "EMAIL" ? "badge-primary" : "badge-accent"}`}>
-                      {log.channel === "EMAIL" ? "📧 Email" : "💬 WhatsApp"}
+                      {log.channel === "EMAIL" ? (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+                          <Mail size={13} /> Email
+                        </span>
+                      ) : (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+                          <MessageCircle size={13} /> WhatsApp
+                        </span>
+                      )}
                     </span>
                   </td>
                   <td style={{ maxWidth: "300px", overflow: "hidden" }}>

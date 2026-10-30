@@ -50,7 +50,7 @@ export async function GET(req: Request) {
         categoryMap[key] = {
           name: key,
           color: e.category?.color ?? "#6b7f77",
-          icon: e.category?.icon ?? "📦",
+          icon: e.category?.icon ?? "Tag",
           amount: 0,
         };
       }

@@ -3,6 +3,29 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import {
+  Tag,
+  Utensils,
+  Car,
+  Home,
+  Zap,
+  ShoppingBag,
+  HeartPulse,
+  BookOpen,
+  Gamepad2,
+  Wallet,
+  Briefcase,
+  Gift,
+  Plane,
+  Coffee,
+  Smartphone,
+  Plus,
+  Pencil,
+  Trash2,
+  ChevronLeft,
+  Check,
+  AlertCircle,
+} from "lucide-react";
 
 interface Category {
   id: string;
@@ -14,14 +37,36 @@ interface Category {
 }
 
 const PRESET_COLORS = [
-  "#16a34a", "#0f9d78", "#2dd4a4", "#3b82f6",
-  "#8b5cf6", "#ec4899", "#e5484d", "#f97316",
-  "#eab308", "#64748b",
+  "#8b5cf6", "#7c3aed", "#16a34a", "#0f9d78", "#2dd4a4", "#3b82f6",
+  "#ec4899", "#ef4444", "#f97316", "#eab308", "#64748b",
 ];
 
 const PRESET_ICONS = [
-  "🍔", "🚗", "🏠", "💡", "🛍️", "💊", "📚", "🎮", "💰", "💼", "🎁", "✈️", "☕", "📱"
+  { id: "Tag", label: "Tag", Icon: Tag },
+  { id: "Utensils", label: "Food & Drinks", Icon: Utensils },
+  { id: "Car", label: "Transport", Icon: Car },
+  { id: "Home", label: "Housing & Rent", Icon: Home },
+  { id: "Zap", label: "Bills & Utilities", Icon: Zap },
+  { id: "ShoppingBag", label: "Shopping", Icon: ShoppingBag },
+  { id: "HeartPulse", label: "Healthcare", Icon: HeartPulse },
+  { id: "BookOpen", label: "Education & Study", Icon: BookOpen },
+  { id: "Gamepad2", label: "Entertainment", Icon: Gamepad2 },
+  { id: "Wallet", label: "Income & Finance", Icon: Wallet },
+  { id: "Briefcase", label: "Salary & Work", Icon: Briefcase },
+  { id: "Gift", label: "Gifts & Allowance", Icon: Gift },
+  { id: "Plane", label: "Travel", Icon: Plane },
+  { id: "Coffee", label: "Cafe & Snacks", Icon: Coffee },
+  { id: "Smartphone", label: "Phone & Subscriptions", Icon: Smartphone },
 ];
+
+function CategoryIcon({ icon, size = 18 }: { icon?: string | null; size?: number }) {
+  const match = PRESET_ICONS.find((p) => p.id.toLowerCase() === (icon || "").toLowerCase());
+  if (match) {
+    const Component = match.Icon;
+    return <Component size={size} />;
+  }
+  return <Tag size={size} />;
+}
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -33,8 +78,8 @@ export default function CategoriesPage() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [name, setName] = useState("");
   const [type, setType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
-  const [color, setColor] = useState("#0f9d78");
-  const [icon, setIcon] = useState("🏷️");
+  const [color, setColor] = useState("#8b5cf6");
+  const [icon, setIcon] = useState("Tag");
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -57,8 +102,8 @@ export default function CategoriesPage() {
     setEditingCategory(null);
     setName("");
     setType("EXPENSE");
-    setColor("#0f9d78");
-    setIcon("🏷️");
+    setColor("#8b5cf6");
+    setIcon("Tag");
     setErrorMsg("");
     setIsModalOpen(true);
   }
@@ -67,8 +112,8 @@ export default function CategoriesPage() {
     setEditingCategory(c);
     setName(c.name);
     setType(c.type);
-    setColor(c.color || "#0f9d78");
-    setIcon(c.icon || "🏷️");
+    setColor(c.color || "#8b5cf6");
+    setIcon(c.icon || "Tag");
     setErrorMsg("");
     setIsModalOpen(true);
   }
@@ -111,25 +156,25 @@ export default function CategoriesPage() {
 
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [actionNotice, setActionNotice] = useState("");
+  const [actionNotice, setActionNotice] = useState<{ text: string; error?: boolean } | null>(null);
 
   async function confirmDelete() {
     if (!deleteTarget) return;
     setDeleting(true);
-    setActionNotice("");
+    setActionNotice(null);
 
     try {
       const res = await fetch(`/api/categories/${deleteTarget.id}`, { method: "DELETE" });
       if (res.ok) {
         setCategories((prev) => prev.filter((c) => c.id !== deleteTarget.id));
-        setActionNotice("Category deleted successfully ✓");
-        setTimeout(() => setActionNotice(""), 3000);
+        setActionNotice({ text: "Category deleted successfully" });
+        setTimeout(() => setActionNotice(null), 3000);
       } else {
         const json = await res.json();
-        setActionNotice(`⚠️ ${json.error || "Could not delete category"}`);
+        setActionNotice({ text: json.error || "Could not delete category", error: true });
       }
     } catch {
-      setActionNotice("⚠️ Error deleting category. Please try again.");
+      setActionNotice({ text: "Error deleting category. Please try again.", error: true });
     } finally {
       setDeleting(false);
       setDeleteTarget(null);
@@ -146,16 +191,35 @@ export default function CategoriesPage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
-            <Link href="/budget" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "0.9rem" }}>
-              ← Back to Budget Sheet
+            <Link href="/budget" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "0.9rem", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+              <ChevronLeft size={16} /> Back to Budget Sheet
             </Link>
           </div>
           <h1>Manage Categories</h1>
         </div>
-        <button className="btn btn-primary" onClick={openCreateModal}>
-          + Add Category
+        <button className="btn btn-primary" onClick={openCreateModal} style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+          <Plus size={16} /> Add Category
         </button>
       </div>
+
+      {actionNotice && (
+        <div
+          style={{
+            padding: "0.75rem 1rem",
+            borderRadius: "var(--radius-sm)",
+            marginBottom: "1rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            background: actionNotice.error ? "rgba(239, 68, 68, 0.12)" : "rgba(34, 197, 94, 0.12)",
+            color: actionNotice.error ? "var(--expense)" : "var(--income)",
+            border: `1px solid ${actionNotice.error ? "rgba(239,68,68,0.3)" : "rgba(34,197,94,0.3)"}`,
+          }}
+        >
+          {actionNotice.error ? <AlertCircle size={16} /> : <Check size={16} />}
+          {actionNotice.text}
+        </div>
+      )}
 
       {/* Filter tabs */}
       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem" }}>
@@ -178,7 +242,9 @@ export default function CategoriesPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="card" style={{ textAlign: "center", padding: "4rem 2rem", color: "var(--muted)" }}>
-          <p style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>🏷️</p>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.75rem" }}>
+            <Tag size={40} />
+          </div>
           <h3>No categories found</h3>
           <p>Create your first custom category to organize your spending and income.</p>
         </div>
@@ -197,7 +263,20 @@ export default function CategoriesPage() {
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                <span style={{ fontSize: "1.5rem" }}>{cat.icon || "🏷️"}</span>
+                <div
+                  style={{
+                    width: "38px",
+                    height: "38px",
+                    borderRadius: "10px",
+                    background: "var(--surface-2)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: cat.color || "var(--primary)",
+                  }}
+                >
+                  <CategoryIcon icon={cat.icon} size={20} />
+                </div>
                 <div>
                   <h4 style={{ fontSize: "1rem", margin: 0 }}>{cat.name}</h4>
                   <span
@@ -215,16 +294,18 @@ export default function CategoriesPage() {
                   style={{ padding: "0.25rem 0.5rem" }}
                   onClick={() => openEditModal(cat)}
                   title="Edit"
+                  aria-label={`Edit ${cat.name}`}
                 >
-                  ✏️
+                  <Pencil size={14} />
                 </button>
                 <button
                   className="btn btn-ghost btn-sm"
                   style={{ padding: "0.25rem 0.5rem", color: "var(--expense)" }}
                   onClick={() => setDeleteTarget({ id: cat.id, name: cat.name })}
                   title="Delete"
+                  aria-label={`Delete ${cat.name}`}
                 >
-                  🗑️
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>
@@ -238,8 +319,8 @@ export default function CategoriesPage() {
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(0, 0, 0, 0.5)",
-            backdropFilter: "blur(4px)",
+            background: "rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(6px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -256,8 +337,8 @@ export default function CategoriesPage() {
             </h2>
 
             {errorMsg && (
-              <p style={{ color: "var(--expense)", fontSize: "0.85rem", marginBottom: "1rem" }}>
-                {errorMsg}
+              <p style={{ color: "var(--expense)", fontSize: "0.85rem", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                <AlertCircle size={14} /> {errorMsg}
               </p>
             )}
 
@@ -297,25 +378,33 @@ export default function CategoriesPage() {
               </div>
 
               <div>
-                <label className="label">Icon</label>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "0.5rem" }}>
-                  {PRESET_ICONS.map((i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      style={{
-                        fontSize: "1.25rem",
-                        padding: "0.35rem 0.5rem",
-                        border: icon === i ? "2px solid var(--primary)" : "1px solid var(--border)",
-                        borderRadius: "8px",
-                        background: icon === i ? "var(--surface-2)" : "transparent",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setIcon(i)}
-                    >
-                      {i}
-                    </button>
-                  ))}
+                <label className="label">Vector Icon</label>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                  {PRESET_ICONS.map((p) => {
+                    const Selected = icon.toLowerCase() === p.id.toLowerCase();
+                    const IconComp = p.Icon;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        style={{
+                          height: "42px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          border: Selected ? "2px solid var(--primary)" : "1px solid var(--border)",
+                          borderRadius: "8px",
+                          background: Selected ? "rgba(139, 92, 246, 0.2)" : "var(--surface-2)",
+                          color: Selected ? "var(--primary)" : "var(--text)",
+                          cursor: "pointer",
+                        }}
+                        title={p.label}
+                        onClick={() => setIcon(p.id)}
+                      >
+                        <IconComp size={18} />
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -374,7 +463,7 @@ export default function CategoriesPage() {
         message={`Are you sure you want to delete the category "${deleteTarget?.name}"? Existing budget entries will become uncategorized.`}
         confirmText="Delete Category"
         variant="danger"
-        icon="🗑️"
+        icon={<Trash2 size={22} />}
         loading={deleting}
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTarget(null)}

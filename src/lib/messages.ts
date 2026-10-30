@@ -9,17 +9,17 @@ export interface ReminderTemplates {
 }
 
 export const DEFAULT_TEMPLATES: ReminderTemplates = {
-  theyOweMe: `Hi {friend}, hope you're doing well! 😊
+  theyOweMe: `Hi {friend}, hope you're doing well.
 Just a gentle reminder — you owe me {currency} {amount}.
 Details: {count} transactions, last on {lastDate}.
 Please send it when you can. Thanks!
 — {myName}`,
 
   iOweThem: `Hi {friend}, I'm noting that I owe you {currency} {amount}.
-I'll pay it back by {date}. Thanks for helping me! 🙏
+I'll pay it back by {date}. Thanks for helping me.
 — {myName}`,
 
-  settled: `Hi {friend}, all settled between us ✅ Thanks!
+  settled: `Hi {friend}, all settled between us. Thanks!
 — {myName}`,
 };
 

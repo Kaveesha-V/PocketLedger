@@ -5,6 +5,25 @@ import { useParams, useRouter } from "next/navigation";
 import { formatCurrency, formatDate, initials, stringToHue } from "@/lib/format";
 import { buildWhatsappUrl, formatDisplayPhone, parseTemplates, renderTemplate } from "@/lib/messages";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import {
+  ChevronLeft,
+  Pencil,
+  Trash2,
+  Phone,
+  Mail,
+  FileText,
+  ArrowUpRight,
+  ArrowDownLeft,
+  CheckCircle2,
+  RotateCcw,
+  Sparkles,
+  MessageCircle,
+  AlertTriangle,
+  AlertCircle,
+  Send,
+  Calendar,
+  Handshake,
+} from "lucide-react";
 
 type LedgerDirection = "I_GAVE" | "I_BORROWED" | "THEY_REPAID" | "I_REPAID";
 
@@ -46,10 +65,10 @@ const DIRECTION_LABELS: Record<LedgerDirection, { label: string; color: string; 
 };
 
 const DIRS: { id: LedgerDirection; label: string; color: string }[] = [
-  { id: "I_GAVE", label: "💸 I gave", color: "var(--income)" },
-  { id: "I_BORROWED", label: "🤲 I borrowed", color: "var(--expense)" },
-  { id: "THEY_REPAID", label: "✅ They repaid", color: "var(--primary)" },
-  { id: "I_REPAID", label: "🔄 I repaid", color: "var(--muted)" },
+  { id: "I_GAVE", label: "I gave", color: "var(--income)" },
+  { id: "I_BORROWED", label: "I borrowed", color: "var(--expense)" },
+  { id: "THEY_REPAID", label: "They repaid", color: "var(--primary)" },
+  { id: "I_REPAID", label: "I repaid", color: "var(--muted)" },
 ];
 
 function QuickAddModal({
@@ -219,7 +238,7 @@ function QuickAddModal({
                   ? `${friendName} will owe you ${formatCurrency(previewNet, currency)}`
                   : previewNet < -0.01
                   ? `You will owe ${friendName} ${formatCurrency(Math.abs(previewNet), currency)}`
-                  : "you'll be all settled ✅"}
+                  : "you'll be all settled"}
               </strong>
             </div>
           )}
@@ -544,7 +563,7 @@ function ReminderPanel({
   const [channel, setChannel] = useState<"whatsapp" | "email">("whatsapp");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState("");
+  const [feedback, setFeedback] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [directWhatsappUrl, setDirectWhatsappUrl] = useState("");
   const [inlinePhone, setInlinePhone] = useState("");
   const [savingInlinePhone, setSavingInlinePhone] = useState(false);
@@ -579,10 +598,10 @@ function ReminderPanel({
       if (!json.error) {
         onPhoneUpdated();
         setInlinePhone("");
-        setFeedback("✅ Phone number saved!");
+        setFeedback({ text: "Phone number saved!", type: "success" });
       }
     } catch {
-      setFeedback("⚠️ Failed to save phone number.");
+      setFeedback({ text: "Failed to save phone number.", type: "error" });
     } finally {
       setSavingInlinePhone(false);
     }
@@ -590,12 +609,12 @@ function ReminderPanel({
 
   async function send() {
     setLoading(true);
-    setFeedback("");
+    setFeedback(null);
     setDirectWhatsappUrl("");
     try {
       if (channel === "whatsapp") {
         if (!friend.phone) {
-          setFeedback("⚠️ No WhatsApp number added for this friend. Please enter a phone number above.");
+          setFeedback({ text: "No WhatsApp number added for this friend. Please enter a phone number above.", type: "error" });
           setLoading(false);
           return;
         }
@@ -610,11 +629,11 @@ function ReminderPanel({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ friendId: friend.id, message }),
         });
-        setFeedback("✅ WhatsApp opened. Reminder logged.");
+        setFeedback({ text: "WhatsApp opened. Reminder logged.", type: "success" });
         onSent();
       } else {
         if (!friend.email) {
-          setFeedback("⚠️ No email address added for this friend.");
+          setFeedback({ text: "No email address added for this friend.", type: "error" });
           setLoading(false);
           return;
         }
@@ -625,14 +644,14 @@ function ReminderPanel({
         });
         const json = await res.json();
         if (json.error) {
-          setFeedback(`⚠️ ${json.error}`);
+          setFeedback({ text: json.error || "Failed to send", type: "error" });
         } else {
-          setFeedback("✅ Email sent successfully!");
+          setFeedback({ text: "Email sent successfully!", type: "success" });
           onSent();
         }
       }
     } catch {
-      setFeedback("⚠️ Something went wrong.");
+      setFeedback({ text: "Something went wrong.", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -658,7 +677,7 @@ function ReminderPanel({
               setDirectWhatsappUrl("");
             }}
           >
-            {ch === "whatsapp" ? "💬 WhatsApp" : "📧 Email"}
+            {ch === "whatsapp" ? <span style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}><MessageCircle size={14} /> WhatsApp</span> : <span style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}><Mail size={14} /> Email</span>}
           </button>
         ))}
       </div>
@@ -680,7 +699,7 @@ function ReminderPanel({
               }}
             >
               <span>
-                💬 Target WhatsApp: <strong style={{ color: "var(--primary)" }}>{formatDisplayPhone(friend.phone)}</strong>
+                <MessageCircle size={14} style={{ display: "inline", verticalAlign: "-2px", marginRight: "4px" }} /> Target WhatsApp: <strong style={{ color: "var(--primary)" }}>{formatDisplayPhone(friend.phone)}</strong>
               </span>
               <button
                 type="button"
@@ -688,7 +707,7 @@ function ReminderPanel({
                 style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", minHeight: "28px" }}
                 onClick={onOpenEdit}
               >
-                ✏️ Edit
+                <Pencil size={13} style={{ display: "inline", verticalAlign: "-2px", marginRight: "3px" }} /> Edit
               </button>
             </div>
           ) : (
@@ -701,7 +720,7 @@ function ReminderPanel({
               }}
             >
               <p style={{ margin: "0 0 0.5rem", fontSize: "0.8rem", color: "var(--text)", fontWeight: 500 }}>
-                ⚠️ No WhatsApp number added for {friend.name}. Enter it below:
+                <AlertCircle size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> No WhatsApp number added for {friend.name}. Enter it below:
               </p>
               <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
                 <input
@@ -737,7 +756,7 @@ function ReminderPanel({
             fontSize: "0.85rem",
           }}
         >
-          📧 Target Email: <strong>{friend.email}</strong>
+          <Mail size={14} style={{ display: "inline", verticalAlign: "-2px", marginRight: "4px" }} /> Target Email: <strong>{friend.email}</strong>
         </div>
       )}
 
@@ -749,8 +768,9 @@ function ReminderPanel({
         style={{ resize: "vertical", fontFamily: "Inter, sans-serif", fontSize: "0.875rem", lineHeight: 1.6 }}
       />
       {feedback && (
-        <p style={{ fontSize: "0.875rem", color: feedback.startsWith("✅") ? "var(--income)" : "var(--expense)", marginTop: "0.5rem" }}>
-          {feedback}
+        <p style={{ fontSize: "0.875rem", color: feedback.type === "success" ? "var(--income)" : "var(--expense)", marginTop: "0.5rem", display: "flex", alignItems: "center", gap: "4px" }}>
+          {feedback.type === "success" ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
+          {feedback.text}
         </p>
       )}
 
@@ -778,7 +798,7 @@ function ReminderPanel({
             fontWeight: 600,
           }}
         >
-          💬 Tap Here to Open WhatsApp Directly ↗
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}><MessageCircle size={15} /> Tap Here to Open WhatsApp Directly ↗</span>
         </a>
       )}
     </div>
@@ -878,7 +898,7 @@ export default function FriendDetailPage() {
   const { balance } = friend;
   const net = balance.net;
   const netColor = net > 0.01 ? "var(--income)" : net < -0.01 ? "var(--expense)" : "var(--muted)";
-  const netLabel = net > 0.01 ? `${friend.name} owes you` : net < -0.01 ? `You owe ${friend.name}` : "All settled ✅";
+  const netLabel = net > 0.01 ? `${friend.name} owes you` : net < -0.01 ? `You owe ${friend.name}` : "All settled";
   const hue = stringToHue(friend.name);
 
   return (
@@ -886,7 +906,7 @@ export default function FriendDetailPage() {
       {/* Top Bar with Back + Edit Friend + Remove Friend */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", marginBottom: "1rem" }}>
         <button className="btn btn-ghost btn-sm" onClick={() => router.back()} style={{ borderRadius: "9999px", padding: "0.4rem 0.9rem" }}>
-          ← Back
+          <ChevronLeft size={16} /> Back
         </button>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <button
@@ -895,7 +915,7 @@ export default function FriendDetailPage() {
             onClick={() => setShowEditFriendModal(true)}
             title="Edit friend details & phone"
           >
-            ✏️ Edit Friend
+            <Pencil size={14} /> Edit Friend
           </button>
           <button
             className="btn btn-ghost btn-sm"
@@ -903,7 +923,7 @@ export default function FriendDetailPage() {
             onClick={() => setShowDeleteFriendModal(true)}
             title="Remove this friend"
           >
-            🗑️ Remove
+            <Trash2 size={14} /> Remove
           </button>
         </div>
       </div>
@@ -956,12 +976,12 @@ export default function FriendDetailPage() {
                   }}
                   title="WhatsApp phone"
                 >
-                  📱 {formatDisplayPhone(friend.phone)}
+                  <Phone size={13} /> {formatDisplayPhone(friend.phone)}
                 </span>
               )}
               {friend.email && (
                 <span className="badge" style={{ background: "var(--surface-2)", color: "var(--muted)" }}>
-                  📧 {friend.email}
+                  <Mail size={13} /> {friend.email}
                 </span>
               )}
             </div>
@@ -1034,7 +1054,7 @@ export default function FriendDetailPage() {
           }}
           onClick={() => openAddWithDir("I_GAVE")}
         >
-          💸 I gave
+          <ArrowUpRight size={16} /> I gave
         </button>
         <button
           id="btn-i-borrowed"
@@ -1049,7 +1069,7 @@ export default function FriendDetailPage() {
           }}
           onClick={() => openAddWithDir("I_BORROWED")}
         >
-          🤲 I borrowed
+          <ArrowDownLeft size={16} /> I borrowed
         </button>
         <button
           id="btn-they-paid"
@@ -1057,7 +1077,7 @@ export default function FriendDetailPage() {
           style={{ borderRadius: "12px", padding: "0.6rem 1rem", fontWeight: 500 }}
           onClick={() => openAddWithDir("THEY_REPAID")}
         >
-          ✅ They paid
+          <CheckCircle2 size={16} /> They paid
         </button>
         <button
           id="btn-i-paid"
@@ -1065,7 +1085,7 @@ export default function FriendDetailPage() {
           style={{ borderRadius: "12px", padding: "0.6rem 1rem", fontWeight: 500 }}
           onClick={() => openAddWithDir("I_REPAID")}
         >
-          🔄 I paid
+          <RotateCcw size={16} /> I paid
         </button>
         {Math.abs(net) > 0.01 && (
           <button
@@ -1083,7 +1103,7 @@ export default function FriendDetailPage() {
             onClick={() => setShowSettleModal(true)}
             disabled={settling}
           >
-            ✨ Settle up
+            <Sparkles size={16} /> Settle up
           </button>
         )}
       </div>
@@ -1100,7 +1120,7 @@ export default function FriendDetailPage() {
 
           {friend.timeline.length === 0 ? (
             <div style={{ textAlign: "center", padding: "3rem 1rem", color: "var(--muted)" }}>
-              <p style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>📝</p>
+              <div style={{ width: "44px", height: "44px", margin: "0 auto 0.5rem", borderRadius: "50%", background: "var(--surface-2)", color: "var(--muted)", display: "flex", alignItems: "center", justifyContent: "center" }}><FileText size={22} /></div>
               <p style={{ margin: 0 }}>No transactions yet. Use the buttons above to add one!</p>
             </div>
           ) : (
@@ -1141,7 +1161,7 @@ export default function FriendDetailPage() {
                             {t.reason ?? "—"}
                             {t.dueDate && (
                               <span style={{ color: "var(--accent)", fontSize: "0.75rem", marginLeft: "0.375rem" }}>
-                                Due {formatDate(t.dueDate, "short")}
+                                <Calendar size={12} style={{ display: "inline", verticalAlign: "-2px", marginRight: "3px" }} /> Due {formatDate(t.dueDate, "short")}
                               </span>
                             )}
                           </td>
@@ -1170,18 +1190,14 @@ export default function FriendDetailPage() {
                                 style={{ padding: "0.25rem 0.5rem" }}
                                 onClick={() => setEditingEntry(t)}
                                 title="Edit transaction"
-                              >
-                                ✏️
-                              </button>
+                              ><Pencil size={14} /></button>
                               <button
                                 type="button"
                                 className="btn btn-ghost btn-sm"
                                 style={{ padding: "0.25rem 0.5rem", color: "var(--expense)" }}
                                 onClick={() => setDeleteTxId(t.id)}
                                 title="Delete transaction"
-                              >
-                                🗑️
-                              </button>
+                              ><Trash2 size={14} /></button>
                             </div>
                           </td>
                         </tr>
@@ -1232,18 +1248,14 @@ export default function FriendDetailPage() {
                             style={{ padding: "0.2rem 0.45rem", minHeight: "28px", fontSize: "0.75rem" }}
                             onClick={() => setEditingEntry(t)}
                             title="Edit"
-                          >
-                            ✏️
-                          </button>
+                          ><Pencil size={14} /></button>
                           <button
                             type="button"
                             className="btn btn-ghost btn-sm"
                             style={{ padding: "0.2rem 0.45rem", minHeight: "28px", fontSize: "0.75rem", color: "var(--expense)" }}
                             onClick={() => setDeleteTxId(t.id)}
                             title="Delete"
-                          >
-                            🗑️
-                          </button>
+                          ><Trash2 size={14} /></button>
                         </div>
                       </div>
 
@@ -1254,7 +1266,7 @@ export default function FriendDetailPage() {
                           </p>
                           {t.dueDate && (
                             <p style={{ margin: "0.2rem 0 0", fontSize: "0.72rem", color: "var(--accent)" }}>
-                              📅 Due {formatDate(t.dueDate, "short")}
+                              <Calendar size={12} style={{ display: "inline", verticalAlign: "-2px", marginRight: "3px" }} /> <Calendar size={12} style={{ display: "inline", verticalAlign: "-2px", marginRight: "3px" }} /> Due {formatDate(t.dueDate, "short")}
                             </p>
                           )}
                         </div>
@@ -1325,7 +1337,7 @@ export default function FriendDetailPage() {
         message={`Are you sure you want to settle all pending transactions? This will bring the net balance with ${friend.name} to 0.`}
         confirmText="Yes, Settle Up"
         variant="primary"
-        icon="🤝"
+        icon={<Sparkles size={22} style={{ color: "var(--primary)" }} />}
         loading={settling}
         onConfirm={handleSettle}
         onCancel={() => setShowSettleModal(false)}
@@ -1338,7 +1350,7 @@ export default function FriendDetailPage() {
         message="Are you sure you want to delete this transaction? It will be permanently removed from this friend's ledger."
         confirmText="Delete"
         variant="danger"
-        icon="🗑️"
+        icon={<Trash2 size={22} style={{ color: "var(--expense)" }} />}
         loading={deletingTx}
         onConfirm={handleDeleteTx}
         onCancel={() => setDeleteTxId(null)}
@@ -1351,7 +1363,7 @@ export default function FriendDetailPage() {
         message={`This will remove ${friend.name} from your active friends list and archive their ledger transactions.`}
         confirmText="Remove Friend"
         variant="danger"
-        icon="⚠️"
+        icon={<AlertTriangle size={22} style={{ color: "var(--expense)" }} />}
         loading={deletingFriend}
         onConfirm={handleDeleteFriend}
         onCancel={() => setShowDeleteFriendModal(false)}
