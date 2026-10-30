@@ -268,56 +268,61 @@ export default function BudgetPage() {
       </div>
 
       {/* Summary KPI Strip */}
-      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
-        <div className="card" style={{ flex: 1, minWidth: "160px", padding: "1rem 1.25rem", borderLeft: "4px solid var(--income)" }}>
+      <div className="budget-kpi-grid">
+        <div className="card budget-kpi-card" style={{ borderLeft: "4px solid var(--income)" }}>
           <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: 0 }}>Total Income</p>
-          <p className="money" style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--income)", margin: "0.25rem 0 0" }}>
+          <p className="money budget-kpi-value" style={{ color: "var(--income)" }}>
             +{formatCurrency(totalIncome, currency)}
           </p>
         </div>
-        <div className="card" style={{ flex: 1, minWidth: "160px", padding: "1rem 1.25rem", borderLeft: "4px solid var(--expense)" }}>
+        <div className="card budget-kpi-card" style={{ borderLeft: "4px solid var(--expense)" }}>
           <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: 0 }}>Total Expense</p>
-          <p className="money" style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--expense)", margin: "0.25rem 0 0" }}>
+          <p className="money budget-kpi-value" style={{ color: "var(--expense)" }}>
             -{formatCurrency(totalExpense, currency)}
           </p>
         </div>
-        <div className="card" style={{ flex: 1, minWidth: "160px", padding: "1rem 1.25rem", borderLeft: `4px solid ${balance >= 0 ? "var(--income)" : "var(--expense)}"}` }}>
+        <div className="card budget-kpi-card" style={{ borderLeft: `4px solid ${balance >= 0 ? "var(--income)" : "var(--expense)}"}` }}>
           <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: 0 }}>Net Monthly Balance</p>
-          <p className="money" style={{ fontSize: "1.25rem", fontWeight: 700, color: balance >= 0 ? "var(--income)" : "var(--expense)", margin: "0.25rem 0 0" }}>
+          <p className="money budget-kpi-value" style={{ color: balance >= 0 ? "var(--income)" : "var(--expense)" }}>
             {formatCurrency(balance, currency)}
           </p>
         </div>
       </div>
 
       {/* Filters & Search */}
-      <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem", flexWrap: "wrap", alignItems: "center" }}>
+      <div className="budget-filters-bar">
         <input
-          className="input"
-          style={{ flex: "1 1 200px", maxWidth: "260px" }}
+          className="input budget-search-input"
           placeholder="Search entries…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        {(["ALL", "INCOME", "EXPENSE"] as const).map((t) => (
-          <button
-            key={t}
-            className="btn btn-sm"
-            style={{
-              border: `1px solid ${typeFilter === t ? "var(--primary)" : "var(--border)"}`,
-              background: typeFilter === t ? "var(--primary)" : "var(--surface)",
-              color: typeFilter === t ? "#fff" : "var(--text)",
-              fontWeight: typeFilter === t ? 600 : 400,
-            }}
-            onClick={() => setTypeFilter(t)}
-          >
-            {t === "ALL" ? "All" : t === "INCOME" ? <span style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}><ArrowUpRight size={14} /> Income</span> : <span style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}><ArrowDownLeft size={14} /> Expense</span>}
-          </button>
-        ))}
+        <div className="budget-filter-tabs">
+          {(["ALL", "INCOME", "EXPENSE"] as const).map((t) => (
+            <button
+              key={t}
+              className="btn btn-sm"
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                border: `1px solid ${typeFilter === t ? "var(--primary)" : "var(--border)"}`,
+                background: typeFilter === t ? "var(--primary)" : "var(--surface)",
+                color: typeFilter === t ? "#fff" : "var(--text)",
+                fontWeight: typeFilter === t ? 600 : 400,
+              }}
+              onClick={() => setTypeFilter(t)}
+            >
+              {t === "ALL" ? "All" : t === "INCOME" ? <span style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}><ArrowUpRight size={14} /> Income</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}><ArrowDownLeft size={14} /> Expense</span>}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Mobile Quick Add Form (< 768px) */}
-      <div className="card mobile-budget-form" style={{ marginBottom: "1.25rem", padding: "1.25rem" }}>
-        <h3 style={{ fontSize: "1rem", marginBottom: "0.875rem" }}><Plus size={16} /> Add Budget Entry</h3>
+      <div className="card mobile-budget-form" style={{ marginBottom: "1.25rem", padding: "1rem" }}>
+        <h3 style={{ fontSize: "1rem", marginBottom: "0.875rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+          <Plus size={16} /> Add Budget Entry
+        </h3>
         <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.75rem" }}>
           {(["EXPENSE", "INCOME"] as const).map((t) => (
             <button
@@ -337,8 +342,8 @@ export default function BudgetPage() {
             </button>
           ))}
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
-          <div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.625rem", marginBottom: "0.75rem" }}>
+          <div style={{ minWidth: 0 }}>
             <label className="label">Title *</label>
             <input
               className="input"
@@ -347,7 +352,7 @@ export default function BudgetPage() {
               onChange={(e) => setNewRow((r) => ({ ...r, title: e.target.value }))}
             />
           </div>
-          <div>
+          <div style={{ minWidth: 0 }}>
             <label className="label">Amount ({currency}) *</label>
             <input
               className="input"
@@ -360,11 +365,12 @@ export default function BudgetPage() {
             />
           </div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
-          <div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.625rem", marginBottom: "0.75rem" }}>
+          <div style={{ minWidth: 0 }}>
             <label className="label">Category</label>
             <select
               className="input"
+              style={{ width: "100%", minWidth: 0 }}
               value={newRow.categoryId}
               onChange={(e) => setNewRow((r) => ({ ...r, categoryId: e.target.value }))}
             >
@@ -376,10 +382,11 @@ export default function BudgetPage() {
               ))}
             </select>
           </div>
-          <div>
+          <div style={{ minWidth: 0 }}>
             <label className="label">Payment Method</label>
             <select
               className="input"
+              style={{ width: "100%", minWidth: 0 }}
               value={newRow.method}
               onChange={(e) => setNewRow((r) => ({ ...r, method: e.target.value }))}
             >
@@ -391,20 +398,22 @@ export default function BudgetPage() {
             </select>
           </div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.875rem" }}>
-          <div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.625rem", marginBottom: "0.875rem" }}>
+          <div style={{ minWidth: 0, overflow: "hidden" }}>
             <label className="label">Date</label>
             <input
               className="input"
               type="date"
+              style={{ width: "100%", minWidth: 0, boxSizing: "border-box" }}
               value={newRow.date}
               onChange={(e) => setNewRow((r) => ({ ...r, date: e.target.value }))}
             />
           </div>
-          <div>
+          <div style={{ minWidth: 0, overflow: "hidden" }}>
             <label className="label">Note (optional)</label>
             <input
               className="input"
+              style={{ width: "100%", minWidth: 0, boxSizing: "border-box" }}
               placeholder="Note…"
               value={newRow.note}
               onChange={(e) => setNewRow((r) => ({ ...r, note: e.target.value }))}
