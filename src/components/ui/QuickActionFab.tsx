@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, X, ArrowUpRight, ArrowDownLeft, BarChart3, Users } from "lucide-react";
+import { Plus, X, ArrowUpRight, ArrowDownLeft, BarChart3, Users, Calculator as CalculatorIcon } from "lucide-react";
+import { Calculator } from "@/components/ui/Calculator";
 
 export function QuickActionFab() {
   const [open, setOpen] = useState(false);
+  const [calcOpen, setCalcOpen] = useState(false);
 
   // Close on Escape key
   useEffect(() => {
@@ -18,7 +20,15 @@ export function QuickActionFab() {
     }
   }, [open]);
 
-  const ACTIONS = [
+  const ACTIONS: Array<{
+    label: string;
+    sub: string;
+    icon: typeof CalculatorIcon;
+    color: string;
+    bg: string;
+    href?: string;
+    action?: () => void;
+  }> = [
     {
       label: "Lend Money (I Gave)",
       sub: "Record money you gave to a friend",
@@ -50,6 +60,14 @@ export function QuickActionFab() {
       icon: Users,
       color: "var(--accent)",
       bg: "color-mix(in srgb, var(--accent) 15%, var(--surface))",
+    },
+    {
+      label: "Calculator",
+      sub: "Quick math for splitting bills and expenses",
+      action: () => { setCalcOpen(true); setOpen(false); },
+      icon: CalculatorIcon,
+      color: "var(--primary)",
+      bg: "color-mix(in srgb, var(--primary) 15%, var(--surface))",
     },
   ];
 
@@ -88,51 +106,73 @@ export function QuickActionFab() {
         >
           {ACTIONS.map((action, i) => {
             const Icon = action.icon;
+            const itemStyle: React.CSSProperties = {
+              display: "flex",
+              alignItems: "center",
+              gap: "0.875rem",
+              padding: "0.75rem 1rem",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              boxShadow: "var(--shadow-lg)",
+              borderRadius: "var(--radius)",
+              textDecoration: "none",
+              color: "var(--text)",
+              minWidth: "260px",
+              transform: "translateY(0)",
+              animation: `fadeIn ${120 + i * 35}ms ease-out`,
+              cursor: "pointer",
+            };
+            const iconBox = (
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "12px",
+                  background: action.bg,
+                  color: action.color,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <Icon size={20} />
+              </div>
+            );
+            const labelBox = (
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ margin: 0, fontWeight: 600, fontSize: "0.875rem", color: "var(--text)" }}>
+                  {action.label}
+                </p>
+                <p style={{ margin: "0.1rem 0 0", fontSize: "0.72rem", color: "var(--muted)" }}>
+                  {action.sub}
+                </p>
+              </div>
+            );
+            if (action.action) {
+              return (
+                <button
+                  key={action.label}
+                  type="button"
+                  onClick={action.action}
+                  className="card card-interactive"
+                  style={itemStyle}
+                >
+                  {iconBox}
+                  {labelBox}
+                </button>
+              );
+            }
             return (
               <Link
                 key={action.label}
-                href={action.href}
+                href={action.href!}
                 onClick={() => setOpen(false)}
                 className="card card-interactive"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.875rem",
-                  padding: "0.75rem 1rem",
-                  background: "var(--surface)",
-                  border: "1px solid var(--border)",
-                  boxShadow: "var(--shadow-lg)",
-                  borderRadius: "var(--radius)",
-                  textDecoration: "none",
-                  color: "var(--text)",
-                  minWidth: "260px",
-                  transform: "translateY(0)",
-                  animation: `fadeIn ${120 + i * 35}ms ease-out`,
-                }}
+                style={itemStyle}
               >
-                <div
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "12px",
-                    background: action.bg,
-                    color: action.color,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  <Icon size={20} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ margin: 0, fontWeight: 600, fontSize: "0.875rem", color: "var(--text)" }}>
-                    {action.label}
-                  </p>
-                  <p style={{ margin: "0.1rem 0 0", fontSize: "0.72rem", color: "var(--muted)" }}>
-                    {action.sub}
-                  </p>
-                </div>
+                {iconBox}
+                {labelBox}
               </Link>
             );
           })}
@@ -182,11 +222,15 @@ export function QuickActionFab() {
           }
         }
         @media (max-width: 380px) {
-          .fab-speed-dial-menu a {
+          .fab-speed-dial-menu a,
+          .fab-speed-dial-menu button {
             min-width: 240px !important;
           }
         }
       `}</style>
+
+      {/* Calculator bottom-sheet modal */}
+      <Calculator isOpen={calcOpen} onClose={() => setCalcOpen(false)} />
     </>
   );
 }
